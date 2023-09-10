@@ -10,12 +10,12 @@ export const Select: React.FC<{}> = () => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return
-    setV(JSON.stringify(Object.keys(window.navigator.contacts ?? { none: false })))
+    setV(JSON.stringify(Object.keys(window.navigator.contacts ?? { none: false })) + '-' + typeof window.navigator?.contacts?.ContactsManager)
   }, [])
 
   const getContact = useCallback(async () => {
       try {
-        const data = await select()
+        const data = await (window?.navigator?.contacts as any)?.select?.(['name'])
         setContacts(data)
       } catch (e) {
         alert((e as any)?.message ?? "no error")
