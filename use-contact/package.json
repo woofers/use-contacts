@@ -1,0 +1,48 @@
+{
+  "name": "use-contact",
+  "version": "1.6.0",
+  "description": "Browser color picker hook for React",
+  "main": "lib/index.js",
+  "module": "lib/index.module.js",
+  "sideEffects": false,
+  "src": "src/index.tsx",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib",
+    "LICENSE",
+    "package.json",
+    "README.md"
+  ],
+  "repository": "https://github.com/woofers/use-contact",
+  "keywords": [
+    "react",
+    "reactjs",
+    "contact"
+  ],
+  "author": "Jaxson Van Doorn <jaxson.vandoorn@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woofers/use-contact/issues"
+  },
+  "homepage": "https://jaxs.onl/use-contact/",
+  "scripts": {
+    "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.module.dev.js lib/use-contacts.module.js lib/index.d.ts",
+    "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
+  },
+  "peerDependencies": {
+    "react": "^0.13.0 || ^0.14.0 || >=15"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "bun-types": "latest",
+    "prettier": "^3.0.3",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.2.2"
+  },
+  "browserslist": [
+    "defaults",
+    "not IE 11"
+  ]
+}
