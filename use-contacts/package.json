@@ -1,6 +1,6 @@
 {
   "name": "use-contacts",
-  "version": "1.6.0",
+  "version": "0.1.0",
   "description": "",
   "main": "lib/index.js",
   "module": "lib/index.mjs",
@@ -13,7 +13,7 @@
     "package.json",
     "README.md"
   ],
-  "repository": "https://github.com/woofers/use-contact",
+  "repository": "https://github.com/woofers/use-contacts",
   "keywords": [
     "react",
     "reactjs",
@@ -22,9 +22,9 @@
   "author": "Jaxson Van Doorn <jaxson.vandoorn@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/woofers/use-contact/issues"
+    "url": "https://github.com/woofers/use-contacts/issues"
   },
-  "homepage": "https://jaxs.onl/use-contact/",
+  "homepage": "https://jaxs.onl/use-contacts/",
   "scripts": {
     "typecheck": "tsc ./src/index.ts --noEmit",
     "types": "cp ./src/types.ts lib/types.d.ts",

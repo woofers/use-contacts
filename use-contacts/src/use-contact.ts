@@ -89,7 +89,7 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
   return [promise, cancel] as const
 }
 
-export const useContact = (options?: ContactManagerOptions) => {
+export const useContacts = (options?: ContactManagerOptions) => {
   const { getProperties, select: selectContacts } = useMemo(
     () => createHelpers(options),
     [options]

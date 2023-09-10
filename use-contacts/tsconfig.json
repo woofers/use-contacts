@@ -22,7 +22,7 @@
     "removeComments": false,
     "sourceMap": false,
     "noUnusedLocals": false,
-    "strict": true,
+    "strict": false,
     "baseUrl": "./src"
   },
   "include": [
