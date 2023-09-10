@@ -13,11 +13,11 @@ type ContactAddress = {
 }
 
 export type CompleteContact = {
-  address: ContactAddress[]
-  email: string[]
-  icon: Blob[]
+  address?: ContactAddress[]
+  email?: string[]
+  icon?: Blob[]
   name: string[]
-  tel: string[]
+  tel?: string[]
 } & {}
 
 export type ContactKey = keyof CompleteContact

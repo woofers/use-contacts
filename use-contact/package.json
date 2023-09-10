@@ -1,9 +1,9 @@
 {
-  "name": "use-contact",
+  "name": "use-contacts",
   "version": "1.6.0",
-  "description": "Browser color picker hook for React",
+  "description": "",
   "main": "lib/index.js",
-  "module": "lib/index.module.js",
+  "module": "lib/index.mjs",
   "sideEffects": false,
   "src": "src/index.tsx",
   "types": "lib/index.d.ts",
@@ -28,9 +28,11 @@
   "scripts": {
     "typecheck": "tsc ./src/index.ts --noEmit",
     "types": "cp ./src/types.ts lib/types.d.ts",
-    "build": "bun run typecheck && bun run clean && bun run types && bun run build:module && bun run build:dev:module",
+    "build": "bun run typecheck && bun run clean && bun run types && bun run build:module && bun run build:dev:module && bun run build:legacy && bun run build:dev:legacy",
     "build:module": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false --entry-naming=use-contacts.mjs",
     "build:dev:module": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=true --entry-naming=use-contacts.dev.mjs",
+    "build:dev:legacy": "esbuild ./lib/use-contacts.dev.mjs --outfile=./lib/use-contacts.dev.js --format=cjs --minify",
+    "build:legacy": "esbuild ./lib/use-contacts.mjs --outfile=./lib/use-contacts.js --format=cjs --minify",
     "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.dev.mjs lib/use-contacts.mjs",
     "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
   },
@@ -42,6 +44,7 @@
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
     "bun-types": "latest",
+    "esbuild": "^0.19.2",
     "microbundle": "^0.15.1",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
