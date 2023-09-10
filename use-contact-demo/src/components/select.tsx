@@ -1,11 +1,18 @@
 'use client'
-import { useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useContact, type Contact } from './use-contact'
 import { Text } from 'components/text'
 
 export const Select: React.FC<{}> = () => {
   const { isSupported, select } = useContact()
+  const [v, setV] = useState('')
   const [contacts, setContacts] = useState([] as Contact[])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    setV(JSON.stringify(Object.keys(window.navigator.contacts ?? { none: false })))
+  }, [])
+
   const getContact = useCallback(async () => {
       try {
         const data = await select()
@@ -24,6 +31,7 @@ export const Select: React.FC<{}> = () => {
               <div>{JSON.stringify(contact)}</div>
             </div>
           ))}
+          <div>{v}</div>
         </div>
     </>
   )
