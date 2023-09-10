@@ -16,7 +16,7 @@ declare global {
 }
 
 const isSupported = () =>
-  typeof window !== 'undefined' && 'contacts' in window.navigator
+  typeof window !== 'undefined' && 'contacts' in navigator
 
 const resolveError = () => {
   let error = 'Unsupported browser.'
@@ -38,7 +38,7 @@ const memo = <T>(func: () => T | Promise<T>) => {
 }
 
 const createInstance = (_?: ContactManagerOptions) =>
-  (isSupported() && window.navigator.contacts) as Contacts
+  (isSupported() && navigator.contacts) as Contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -56,12 +56,12 @@ const useIsSupported = () => {
 
 const createHelpers = (options?: ContactManagerOptions) => {
   const instance = createInstance(options)
-  return {
-    select: (...args) =>
+  return [
+    (...args) =>
       instance ? instance.select(...args) : resolveError(),
-    getProperties: (...args) =>
+    (...args) =>
       instance ? instance.getProperties(...args) : resolveError()
-  } as typeof instance
+  ] as [(typeof instance)['select'], (typeof instance)['getProperties']]
 }
 
 const resolveOnSignal = (signal: AbortController['signal']) => {
@@ -80,7 +80,7 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
 }
 
 export const useContacts = (options?: ContactManagerOptions) => {
-  const { getProperties, select: selectContacts } = useMemo(
+  const [selectContacts, getProperties] = useMemo(
     () => createHelpers(options),
     [options]
   )
