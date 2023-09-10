@@ -42,5 +42,5 @@ export interface Contacts extends ContactsManager {
   ContactsManager: ContactsManager
 }
 
-export type ContactManagerOptions = {}
+export type ContactManagerOptions = Record<string, never>
 export {}
