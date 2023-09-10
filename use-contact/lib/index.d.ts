@@ -5,8 +5,8 @@ export type { Contact }
 type ContactRet<T extends ContactKey> = Contact<T> extends infer X ? { [K in keyof X]: Contact<T>[K] } : never
 
 export declare const useContact: (options?: ContactManagerOptions) => {
-  getProperties: () => Promise<("address" | "email" | "icon" | "name" | "tel")[]>
-  select: <T extends "address" | "email" | "icon" | "name" | "tel">(properties?: T[] | undefined, options?: ContactOptions) => Promise<ContactRet<T>[]>
+  getProperties: () => Promise<ContactKey[]>
+  select: <T extends ContactKey>(properties?: T[] | undefined, options?: ContactOptions) => Promise<(Contact<T> extends infer X ? { [K in keyof X]: Contact<T>[K] } : never)[]>
   isSupported: () => boolean
   cancel: () => void
 }
