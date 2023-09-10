@@ -54,21 +54,14 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
-// eslint-disable-next-line
-const wrap = <T extends (...args: any) => any>(
-  func: (...args: Parameters<T>) => ReturnType<T>
-) => func
-
 const createHelpers = (options?: ContactManagerOptions) => {
   const instance = createInstance(options)
   return {
-    select: wrap<typeof instance.select>((...args) =>
-      instance ? instance.select(...args) : resolveError()
-    ),
-    getProperties: wrap<typeof instance.getProperties>((...args) =>
+    select: (...args) =>
+      instance ? instance.select(...args) : resolveError(),
+    getProperties: (...args) =>
       instance ? instance.getProperties(...args) : resolveError()
-    )
-  }
+  } as typeof instance
 }
 
 const resolveOnSignal = (signal: AbortController['signal']) => {
@@ -95,7 +88,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
   const controller = useRef<AbortController>()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const cancel = useCallback(() => {
-    if (typeof controller.current === 'undefined') return
+    if (!controller.current) return
     controller.current.abort()
   }, [])
   const select = useCallback(
@@ -110,7 +103,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
       controller.current = abort
       try {
         const props =
-          !properties || properties.length <= 0
+          !properties || !properties.length
             ? await checkProperties()
             : properties
         const [promise, cancel] = resolveOnSignal(abort.signal)
