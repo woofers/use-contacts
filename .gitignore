@@ -1,5 +1,5 @@
-/use-contacts/lib/use-contacts.mjs
-/use-contacts/lib/use-contacts.dev.mjs
-/use-contacts/lib/types.d.ts
-/use-contacts/lib/use-contacts.js
-/use-contacts/lib/use-contacts.dev.js
+/packages/use-contacts/lib/use-contacts.mjs
+/packages/use-contacts/lib/use-contacts.dev.mjs
+/packages/use-contacts/lib/types.d.ts
+/packages/use-contacts/lib/use-contacts.js
+/packages/use-contacts/lib/use-contacts.dev.js
