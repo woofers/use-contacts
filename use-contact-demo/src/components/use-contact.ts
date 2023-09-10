@@ -118,8 +118,8 @@ export const useContact = (options?: {}) => {
       return resolveError()
     }
     try {
-      //const props = await checkProperties()
-      const data = await selectOg(properties ?? ['name'], options)
+      const props = await checkProperties()
+      const data = await selectOg(properties ?? props, options)
       return data
     } catch (e) {
       console.log(e)
