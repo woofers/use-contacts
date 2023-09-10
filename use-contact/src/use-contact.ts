@@ -1,5 +1,12 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-import type { Contact, ContactKey, Contacts, ContactOptions, ContactManagerOptions, Simplify } from './types'
+import type {
+  Contact,
+  ContactKey,
+  Contacts,
+  ContactOptions,
+  ContactManagerOptions,
+  Simplify
+} from './types'
 
 declare global {
   interface Navigator {
@@ -34,7 +41,8 @@ const memo = <T>(func: () => T | Promise<T>) => {
   }
 }
 
-const createInstance = (options?: ContactManagerOptions) => (isSupported() && window.navigator.contacts) as Contacts
+const createInstance = (options?: ContactManagerOptions) =>
+  (isSupported() && window.navigator.contacts) as Contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -50,13 +58,19 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
-const wrap = <T extends (...args: any) => any>(func: (...args: Parameters<T>) => ReturnType<T>) => func
+const wrap = <T extends (...args: any) => any>(
+  func: (...args: Parameters<T>) => ReturnType<T>
+) => func
 
 const createHelpers = (options?: ContactManagerOptions) => {
   const instance = createInstance(options)
   return {
-    select: wrap<typeof instance.select>((...args) => instance ? instance.select(...args) : resolveError()),
-    getProperties: wrap<typeof instance.getProperties>((...args) => instance ? instance.getProperties(...args) : resolveError())
+    select: wrap<typeof instance.select>((...args) =>
+      instance ? instance.select(...args) : resolveError()
+    ),
+    getProperties: wrap<typeof instance.getProperties>((...args) =>
+      instance ? instance.getProperties(...args) : resolveError()
+    )
   }
 }
 
@@ -75,9 +89,11 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
   return [promise, cancel] as const
 }
 
-
 export const useContact = (options?: ContactManagerOptions) => {
-  const { getProperties, select: selectContacts } = useMemo(() => createHelpers(options), [options])
+  const { getProperties, select: selectContacts } = useMemo(
+    () => createHelpers(options),
+    [options]
+  )
   const [mounted, isSupported] = useIsSupported()
   const controller = useRef<AbortController>()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
@@ -85,23 +101,35 @@ export const useContact = (options?: ContactManagerOptions) => {
     if (typeof controller.current === 'undefined') return
     controller.current.abort()
   }, [])
-  const select = useCallback(async <T extends ContactKey>(properties?: T[], options?: ContactOptions) => {
-    if (!isSupported()) {
-      return resolveError()
-    }
-    const abort = new AbortController()
-    controller.current = abort
-    try {
-      const props = (!properties || properties.length <= 0) ? (await checkProperties()) : properties
-      const [promise, cancel] = resolveOnSignal(abort.signal)
-      const data = await Promise.race([selectContacts(props, options), promise])
-      cancel()
-      return data as Simplify<Contact<T>>[]
-    } catch (e) {
-      if (!mounted.current) (e as { canceled?: boolean }).canceled = true
-      throw e
-    }
-  }, [selectContacts, checkProperties, isSupported])
+  const select = useCallback(
+    async <T extends ContactKey>(
+      properties?: T[],
+      options?: ContactOptions
+    ) => {
+      if (!isSupported()) {
+        return resolveError()
+      }
+      const abort = new AbortController()
+      controller.current = abort
+      try {
+        const props =
+          !properties || properties.length <= 0
+            ? await checkProperties()
+            : properties
+        const [promise, cancel] = resolveOnSignal(abort.signal)
+        const data = await Promise.race([
+          selectContacts(props, options),
+          promise
+        ])
+        cancel()
+        return data as Simplify<Contact<T>>[]
+      } catch (e) {
+        if (!mounted.current) (e as { canceled?: boolean }).canceled = true
+        throw e
+      }
+    },
+    [selectContacts, checkProperties, isSupported]
+  )
   useEffect(() => cancel, [cancel])
   return { getProperties, select, isSupported, cancel }
 }

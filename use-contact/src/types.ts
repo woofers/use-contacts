@@ -1,4 +1,3 @@
-
 type ContactAddress = {
   addressLine?: string[]
   city?: string
@@ -24,16 +23,19 @@ export type CompleteContact = {
 export type ContactKey = keyof CompleteContact
 
 export type Contact<T extends ContactKey = never> = {
-  [K in ([T] extends [never] ? ContactKey : T)]: CompleteContact[K]
+  [K in [T] extends [never] ? ContactKey : T]: CompleteContact[K]
 }
 
-export type Simplify<T> = {[K in keyof T]: T[K]} & {}
+export type Simplify<T> = { [K in keyof T]: T[K] } & {}
 
 export type ContactOptions = { multiple?: boolean }
 
 interface ContactsManager {
   getProperties: () => Promise<ContactKey[]>
-  select: (properties: string[], options?: ContactOptions) => Promise<CompleteContact[]>
+  select: (
+    properties: string[],
+    options?: ContactOptions
+  ) => Promise<CompleteContact[]>
 }
 
 export interface Contacts extends ContactsManager {
