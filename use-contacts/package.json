@@ -26,6 +26,7 @@
   },
   "homepage": "https://jaxs.onl/use-contacts/",
   "scripts": {
+    "lint": "eslint \"src/**/*.{jsx,js,tsx,ts}\"",
     "typecheck": "tsc ./src/index.ts --noEmit",
     "types": "cp ./src/types.ts lib/types.d.ts",
     "build": "bun run typecheck && bun run clean && bun run types && bun run build:module && bun run build:dev:module && bun run build:legacy && bun run build:dev:legacy",
@@ -43,8 +44,13 @@
   "devDependencies": {
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
     "bun-types": "latest",
     "esbuild": "^0.19.2",
+    "eslint": "^8.49.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "eslint-plugin-react": "^7.33.2",
     "microbundle": "^0.15.1",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
