@@ -125,7 +125,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
         throw e
       }
     },
-    [selectContacts, checkProperties, isSupported]
+    [selectContacts, checkProperties, isSupported, mounted]
   )
   useEffect(() => cancel, [cancel])
   return { getProperties, select, isSupported, cancel }
