@@ -2,7 +2,7 @@
   "compilerOptions": {
     "declarationDir": "./lib",
     "declaration": true,
-    "noEmit": true,
+    "noEmit": false,
     "incremental": true,
     "isolatedModules": true,
     "downlevelIteration": true,
