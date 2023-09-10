@@ -14,7 +14,7 @@ type ContactAddress = {
   toJSON: () => string
 }
 
-type Contact = {
+export type Contact = {
   address: ContactAddress[]
   email: string[]
   icon: Blob
@@ -47,7 +47,7 @@ const resolveError = () => {
 }
 
 const memo = <T, K extends string>(func: () => T | Promise<T>, key: K) => {
-  const cache: Record<string, T | 'error'> = {}
+  const cache: Record<string, T> = {}
   const wrapper = async () => {
     if (cache[key]) return cache[key]
     try {
@@ -55,7 +55,7 @@ const memo = <T, K extends string>(func: () => T | Promise<T>, key: K) => {
       cache[key] = result
       return result
     } catch (e) {
-      cache[key] = 'error'
+      cache[key] = [] as T
       throw e
     }
   }
@@ -67,7 +67,7 @@ const checkProperties = memo(async () => {
   return supportedProperties
 }, 'gp')
 
-const createInstance = (options: {}) => isSupported() && window.navigator.contacts
+const createInstance = (options?: {}) => isSupported() && window.navigator.contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -83,26 +83,30 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
-const createHelpers = (options: {}) => {
+const createHelpers = (options?: {}) => {
   const contacts = createInstance(options) || { select: resolveError, getProperties: resolveError }
   return contacts
 }
 
-export const useContact = (options: {}) => {
+export const useContact = (options?: {}) => {
   const { getProperties, select: selectOg } = useMemo(() => createHelpers(options), [options])
   const [mounted, isSupported] = useIsSupported()
   const controller = useRef()
   const close = useCallback(() => {
   }, [])
-  const select = useCallback(async <T extends string>(properties: T[], options = { multiple: false }) => {
+  const select = useCallback(async <T extends string>(properties?: T[], options = { multiple: false }) => {
+    if (!isSupported()) {
+      return resolveError()
+    }
     try {
       const props = await checkProperties()
       const data = await selectOg(properties ?? props, options)
       return data
     } catch (e) {
       console.log(e)
+      throw e
     }
-  }, [selectOg])
+  }, [selectOg, isSupported])
   useEffect(() => close, [close])
-  return { getProperties, select: isSupported() ? select : selectOg, isSupported }
+  return { getProperties, select, isSupported }
 }

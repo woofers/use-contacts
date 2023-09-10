@@ -1,17 +1,17 @@
 'use client'
 import { useState, useCallback } from 'react'
-import { useContact } from './use-contact'
+import { useContact, type Contact } from './use-contact'
 import { Text } from 'components/text'
 
 export const Select: React.FC<{}> = () => {
   const { isSupported, select } = useContact()
-  const [contacts, setContacts] = useState([])
+  const [contacts, setContacts] = useState([] as Contact[])
   const getContact = useCallback(async () => {
       try {
         const data = await select()
-        setContacts([data])
+        setContacts(data)
       } catch (e) {
-        alert(e.message ?? "no error")
+        alert((e as any)?.message ?? "no error")
       }
   }, [select])
   return (
