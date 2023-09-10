@@ -26,8 +26,10 @@
   },
   "homepage": "https://jaxs.onl/use-contact/",
   "scripts": {
-    "build": "cp ./src/types.ts lib/types.d.ts && bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false",
-    "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.module.dev.js lib/use-contacts.module.js lib/index.d.ts",
+    "typecheck": "tsc ./src/index.ts --noEmit",
+    "types": "cp ./src/types.ts lib/types.d.ts",
+    "build": "bun run typecheck && bun run clean && bun run types && bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false --entry-naming=use-contacts.mjs",
+    "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.dev.mjs lib/use-contacts.mjs",
     "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
   },
   "peerDependencies": {
