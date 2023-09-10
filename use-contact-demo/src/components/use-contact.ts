@@ -74,7 +74,7 @@ const memo = <T>(func: () => T | Promise<T>) => {
   }
 }
 
-const createInstance = (options?: ContactManagerOptions) => isSupported() && window.navigator.contacts
+const createInstance = (options?: ContactManagerOptions) => (isSupported() && window.navigator.contacts) as Contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -93,29 +93,52 @@ const useIsSupported = () => {
 const wrap = <T extends (...args: any) => any>(func: (...args: Parameters<T>) => ReturnType<T>) => func
 
 const createHelpers = (options?: ContactManagerOptions) => {
-  const instance = createInstance(options) || {} as never
+  const instance = createInstance(options)
   return {
-    select: wrap<typeof instance.select>((...args) => (instance?.select || resolveError)(...args)),
-    getProperties: wrap<typeof instance.getProperties>((...args) => (instance?.getProperties || resolveError)(...args))
+    select: wrap<typeof instance.select>((...args) => instance ? instance.select(...args) : resolveError()),
+    getProperties: wrap<typeof instance.getProperties>((...args) => instance ? instance.getProperties(...args) : resolveError())
   }
 }
+
+const resolveOnSignal = (signal: AbortController['signal']) => {
+  let onAbort: () => void
+  const cancel = () => {
+    if (!onAbort) return
+    signal.removeEventListener('abort', onAbort)
+  }
+  const promise = new Promise<ContactKey[]>(resolve => {
+    onAbort = () => {
+      resolve([])
+    }
+    signal.addEventListener('abort', onAbort)
+  })
+  return [promise, cancel] as const
+}
+
 
 export const useContact = (options?: ContactManagerOptions) => {
   const { getProperties, select: selectContacts } = useMemo(() => createHelpers(options), [options])
   const [mounted, isSupported] = useIsSupported()
-  const controller = useRef()
+  const controller = useRef<AbortController>()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const cancel = useCallback(() => {
+    if (typeof controller.current === 'undefined') return
+    controller.current.abort()
   }, [])
   const select = useCallback(async <T extends ContactKey>(properties?: T[], options?: ContactOptions) => {
     if (!isSupported()) {
       return resolveError()
     }
+    const abort = new AbortController()
+    controller.current = abort
     try {
       const props = (!properties || properties.length <= 0) ? (await checkProperties()) : properties
-      const data = await selectContacts(props, options)
+      const [promise, cancel] = resolveOnSignal(abort.signal)
+      const data = await Promise.race([selectContacts(props, options), promise])
+      cancel()
       return data as ContactWithProperties<T>[]
     } catch (e) {
+      if (!mounted.current) (e as { canceled?: boolean }).canceled = true
       throw e
     }
   }, [selectContacts, checkProperties, isSupported])
