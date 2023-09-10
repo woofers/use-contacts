@@ -32,16 +32,12 @@ const memo = <T>(func: () => T | Promise<T>) => {
   let cache: T
   return async () => {
     if (cache) return cache
-    try {
-      cache = await func()
-      return cache
-    } catch (e) {
-      throw e
-    }
+    cache = await func()
+    return cache
   }
 }
 
-const createInstance = (options?: ContactManagerOptions) =>
+const createInstance = (_?: ContactManagerOptions) =>
   (isSupported() && window.navigator.contacts) as Contacts
 
 const useIsSupported = () => {
@@ -58,6 +54,7 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
+// eslint-disable-next-line
 const wrap = <T extends (...args: any) => any>(
   func: (...args: Parameters<T>) => ReturnType<T>
 ) => func
@@ -128,7 +125,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
         throw e
       }
     },
-    [selectContacts, checkProperties, isSupported]
+    [selectContacts, checkProperties, isSupported, mounted]
   )
   useEffect(() => cancel, [cancel])
   return { getProperties, select, isSupported, cancel }
