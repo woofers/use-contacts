@@ -1,21 +1,16 @@
 'use client'
-import { useEffect, useState, useCallback } from 'react'
-import { useContacts, type SelectContact } from 'use-contacts'
+import { useState, useCallback } from 'react'
+import { useContacts, type SelectContact, type Contact } from 'use-contacts'
 import { Text } from 'components/text'
 
 export const Select: React.FC<{}> = () => {
-  const { isSupported, select } = useContacts({})
-  const [v, setV] = useState('')
-  const [contacts, setContacts] = useState([] as SelectContact<'tel', { multiple: true }>)
+  const { isSupported, select } = useContacts()
+  const [contacts, setContacts] = useState([] as Contact[])
 
-  useEffect(() => {
-    if (typeof window === 'undefined') return
-    setV(JSON.stringify(Object.keys(window.navigator.contacts ?? { none: false })) + '-' + typeof window.navigator?.contacts?.ContactsManager)
-  }, [])
 
   const getContact = useCallback(async () => {
       try {
-        const data = await select(['tel'], { multiple: true })
+        const data = await select()
         setContacts(data)
       } catch (e) {
         alert((e as any)?.message ?? "no error")
@@ -31,7 +26,6 @@ export const Select: React.FC<{}> = () => {
               <div>{JSON.stringify(contact)}</div>
             </div>
           ))}
-          <div>{v}</div>
         </div>
     </>
   )
