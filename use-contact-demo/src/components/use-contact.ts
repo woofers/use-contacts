@@ -83,9 +83,11 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
+const wrap = <T extends (...args: any) => any>(func: T) => (...args: Parameters<T>) => func(...args)
+
 const createHelpers = (options?: {}) => {
   const contacts = createInstance(options) || { select: resolveError, getProperties: resolveError }
-  return contacts
+  return { select: wrap(contacts.select), getProperties: wrap(contacts.getProperties) }
 }
 
 export const useContact = (options?: {}) => {
