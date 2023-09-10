@@ -26,6 +26,7 @@
   },
   "homepage": "https://jaxs.onl/use-contact/",
   "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false",
     "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.module.dev.js lib/use-contacts.module.js lib/index.d.ts",
     "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
   },
@@ -34,7 +35,10 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@types/react": "^18.2.21",
+    "@types/react-dom": "^18.2.7",
     "bun-types": "latest",
+    "microbundle": "^0.15.1",
     "prettier": "^3.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
