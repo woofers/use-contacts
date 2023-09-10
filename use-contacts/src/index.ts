@@ -1,2 +1,2 @@
-export { useContacts } from './use-contact'
+export { useContacts } from './use-contacts'
 export type { Contact } from './types'
