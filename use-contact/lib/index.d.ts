@@ -2,11 +2,11 @@ import type { Contact, ContactKey, ContactOptions, ContactManagerOptions } from 
 
 export type { Contact }
 
-type ContactRet<T extends ContactKey> = Contact<T> extends infer X ? { [K in keyof X]: Contact<T>[K] } : never
+type ContactWithFields<T extends ContactKey> = Contact<T> extends infer X ? { [K in keyof X]: Contact<T>[K] } : never
 
 export declare const useContact: (options?: ContactManagerOptions) => {
   getProperties: () => Promise<ContactKey[]>
-  select: <T extends ContactKey>(properties?: T[] | undefined, options?: ContactOptions) => Promise<(Contact<T> extends infer X ? { [K in keyof X]: Contact<T>[K] } : never)[]>
+  select: <T extends ContactKey, K extends boolean = false>(properties?: T[] | undefined, options?: ContactOptions<K>) => Promise<K extends false ? [ContactWithFields<T>] : ContactWithFields<T>[]>
   isSupported: () => boolean
   cancel: () => void
 }

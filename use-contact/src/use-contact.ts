@@ -102,9 +102,9 @@ export const useContact = (options?: ContactManagerOptions) => {
     controller.current.abort()
   }, [])
   const select = useCallback(
-    async <T extends ContactKey>(
+    async <T extends ContactKey, K extends boolean = false>(
       properties?: T[],
-      options?: ContactOptions
+      options?: ContactOptions<K>
     ) => {
       if (!isSupported()) {
         return resolveError()
@@ -122,7 +122,7 @@ export const useContact = (options?: ContactManagerOptions) => {
           promise
         ])
         cancel()
-        return data as Simplify<Contact<T>>[]
+        return data as unknown as K extends false ? [Simplify<Contact<T>>] : Simplify<Contact<T>>[]
       } catch (e) {
         if (!mounted.current) (e as { canceled?: boolean }).canceled = true
         throw e
