@@ -23,16 +23,15 @@ export type Contact = {
 }
 
 type ContactWithProperties<T extends ContactKey> = {
-  [K in T]: Contact[K]
+  [K in ([T] extends [never] ? ContactKey : T)]: Contact[K]
 }
 
 type ContactKey = keyof Contact
 
-
 type ContactOptions = { multiple?: boolean }
 
 interface ContactsManager {
-  getProperties: () => Promise<string[]>
+  getProperties: () => Promise<ContactKey[]>
   select: (properties: string[], options?: ContactOptions) => Promise<Contact[]>
 }
 
@@ -106,20 +105,20 @@ export const useContact = (options?: ContactManagerOptions) => {
   const [mounted, isSupported] = useIsSupported()
   const controller = useRef()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
-  const close = useCallback(() => {
+  const cancel = useCallback(() => {
   }, [])
   const select = useCallback(async <T extends ContactKey>(properties?: T[], options?: ContactOptions) => {
     if (!isSupported()) {
       return resolveError()
     }
     try {
-      const props = !properties ? (await checkProperties()) : properties
+      const props = (!properties || properties.length <= 0) ? (await checkProperties()) : properties
       const data = await selectContacts(props, options)
       return data as ContactWithProperties<T>[]
     } catch (e) {
       throw e
     }
   }, [selectContacts, checkProperties, isSupported])
-  useEffect(() => close, [close])
-  return { getProperties, select, isSupported }
+  useEffect(() => cancel, [cancel])
+  return { getProperties, select, isSupported, cancel }
 }
