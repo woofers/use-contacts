@@ -95,13 +95,16 @@ const useIsSupported = () => {
   return [mounted, supported] as const
 }
 
-const wrap = <T extends (...args: any) => any>(func: T) => (...args: Parameters<T>) => func(...args)
+const wrap = <T extends (...args: any) => any>(func: (...args: Parameters<T>) => ReturnType<T>) => func
 
 const createHelpers = (options?: {}) => {
-  const instance = createInstance(options) || { select: resolveError, getProperties: resolveError }
+  const instance = createInstance(options) || { select: resolveError, getProperties: resolveError } as ContactsManager
   //const select = bindFunc('select', instance)
   //const getProperties = bindFunc('getProperties', instance)
-  return { select: wrap(instance.select), getProperties: wrap(instance.getProperties) }
+  return {
+    select: wrap<typeof instance.select>((...args) => instance.select(...args)),
+    getProperties: wrap<typeof instance.getProperties>((...args) => instance.getProperties(...args))
+  }
 }
 
 export const useContact = (options?: {}) => {
