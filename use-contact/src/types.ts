@@ -43,3 +43,4 @@ export interface Contacts extends ContactsManager {
 }
 
 export type ContactManagerOptions = {}
+export {}

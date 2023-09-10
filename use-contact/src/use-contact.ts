@@ -12,12 +12,12 @@ declare global {
   interface Navigator {
     contacts?: Contacts
   }
+  var __isDev__: boolean
 }
 
 const isSupported = () =>
   typeof window !== 'undefined' && 'contacts' in window.navigator
 
-const __isDev__ = true
 const resolveError = () => {
   let error = 'Unsupported browser.'
   // istanbul ignore next

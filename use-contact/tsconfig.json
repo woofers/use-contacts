@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "declarationDir": "./lib",
+    "declaration": true,
     "noEmit": true,
     "incremental": true,
     "isolatedModules": true,
     "downlevelIteration": true,
     "skipLibCheck": true,
-    "allowImportingTsExtensions": true,
     "moduleDetection": "force",
     "allowJs": false,
     "module": "ESNext",
@@ -16,7 +17,7 @@
     "experimentalDecorators": true,
     "jsx": "preserve",
     "lib": ["dom", "dom.iterable", "es2017"],
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "preserveConstEnums": true,
     "removeComments": false,
     "sourceMap": false,
