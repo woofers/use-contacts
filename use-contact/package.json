@@ -28,7 +28,9 @@
   "scripts": {
     "typecheck": "tsc ./src/index.ts --noEmit",
     "types": "cp ./src/types.ts lib/types.d.ts",
-    "build": "bun run typecheck && bun run clean && bun run types && bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false --entry-naming=use-contacts.mjs",
+    "build": "bun run typecheck && bun run clean && bun run types && bun run build:module && bun run build:dev:module",
+    "build:module": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=false --entry-naming=use-contacts.mjs",
+    "build:dev:module": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=true --entry-naming=use-contacts.dev.mjs",
     "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.dev.mjs lib/use-contacts.mjs",
     "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
   },
