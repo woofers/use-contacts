@@ -52,26 +52,20 @@ const resolveError = () => {
   throw new Error(error)
 }
 
-const memo = <T, K extends string>(func: () => T | Promise<T>, key: K) => {
-  const cache: Record<string, T> = {}
-  const wrapper = async () => {
-    if (cache[key]) return cache[key]
+const memo = <T>(func: () => T | Promise<T>) => {
+  let cache: T
+  let wrapper = async () => {
+    if (cache) return cache
     try {
       const result = await func()
-      cache[key] = result
+      cache = result
       return result
     } catch (e) {
-      cache[key] = [] as T
       throw e
     }
   }
   return wrapper
 }
-
-const checkProperties = memo(async () => {
-  const supportedProperties = (await window.navigator.contacts?.getProperties()) ?? [];
-  return supportedProperties
-}, 'gp')
 
 const createInstance = (options?: {}) => isSupported() && window.navigator.contacts
 
@@ -108,9 +102,10 @@ const createHelpers = (options?: {}) => {
 }
 
 export const useContact = (options?: {}) => {
-  const { getProperties, select: selectOg } = useMemo(() => createHelpers(options), [options])
+  const { getProperties, select: selectContacts } = useMemo(() => createHelpers(options), [options])
   const [mounted, isSupported] = useIsSupported()
   const controller = useRef()
+  const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const close = useCallback(() => {
   }, [])
   const select = useCallback(async <T extends string>(properties?: T[], options = { multiple: false }) => {
@@ -118,14 +113,13 @@ export const useContact = (options?: {}) => {
       return resolveError()
     }
     try {
-      const props = await checkProperties()
-      const data = await selectOg(properties ?? props, options)
+      const props = !properties ? (await checkProperties()) : properties
+      const data = await selectContacts(props, options)
       return data
     } catch (e) {
-      console.log(e)
       throw e
     }
-  }, [selectOg, isSupported])
+  }, [selectContacts, checkProperties, isSupported])
   useEffect(() => close, [close])
   return { getProperties, select, isSupported }
 }
