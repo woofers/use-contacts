@@ -98,10 +98,10 @@ const useIsSupported = () => {
 const wrap = <T extends (...args: any) => any>(func: T) => (...args: Parameters<T>) => func(...args)
 
 const createHelpers = (options?: {}) => {
-  const instance = createInstance(options)
-  const select = bindFunc('select', instance)
-  const getProperties = bindFunc('getProperties', instance)
-  return { select, getProperties }
+  const instance = createInstance(options) || { select: resolveError, getProperties: resolveError }
+  //const select = bindFunc('select', instance)
+  //const getProperties = bindFunc('getProperties', instance)
+  return { select: wrap(instance.select), getProperties: wrap(instance.getProperties) }
 }
 
 export const useContact = (options?: {}) => {
@@ -115,8 +115,8 @@ export const useContact = (options?: {}) => {
       return resolveError()
     }
     try {
-      const props = await checkProperties()
-      const data = await selectOg(properties ?? props, options)
+      //const props = await checkProperties()
+      const data = await selectOg(properties ?? ['name'], options)
       return data
     } catch (e) {
       console.log(e)
