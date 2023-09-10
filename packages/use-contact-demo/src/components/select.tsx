@@ -1,12 +1,12 @@
 'use client'
 import { useEffect, useState, useCallback } from 'react'
-import { useContacts, type Contact } from 'use-contacts'
+import { useContacts, type SelectContact } from 'use-contacts'
 import { Text } from 'components/text'
 
 export const Select: React.FC<{}> = () => {
-  const { isSupported, select } = useContacts()
+  const { isSupported, select } = useContacts({})
   const [v, setV] = useState('')
-  const [contacts, setContacts] = useState([] as Contact[])
+  const [contacts, setContacts] = useState([] as SelectContact<'tel', { multiple: true }>)
 
   useEffect(() => {
     if (typeof window === 'undefined') return
@@ -15,7 +15,7 @@ export const Select: React.FC<{}> = () => {
 
   const getContact = useCallback(async () => {
       try {
-        const data = await select(['address'], { multiple: false })
+        const data = await select(['tel'], { multiple: true })
         setContacts(data)
       } catch (e) {
         alert((e as any)?.message ?? "no error")
