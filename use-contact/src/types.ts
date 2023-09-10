@@ -28,7 +28,7 @@ export type Contact<T extends ContactKey = never> = {
 
 export type Simplify<T> = { [K in keyof T]: T[K] } & {}
 
-export type ContactOptions = { multiple?: boolean }
+export type ContactOptions<K extends boolean = boolean> = { multiple?: K }
 
 interface ContactsManager {
   getProperties: () => Promise<ContactKey[]>
