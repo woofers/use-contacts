@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 
 type ContactAddress = {
-  addressLine?: string
+  addressLine?: string[]
   city?: string
   country?: string
   dependentLocality?: string
@@ -17,20 +17,30 @@ type ContactAddress = {
 export type Contact = {
   address: ContactAddress[]
   email: string[]
-  icon: Blob
+  icon: Blob[]
   name: string[]
   tel: string[]
 }
 
+type ContactWithProperties<T extends ContactKey> = {
+  [K in T]: Contact[K]
+}
+
+type ContactKey = keyof Contact
+
+
+type ContactOptions = { multiple?: boolean }
 
 interface ContactsManager {
   getProperties: () => Promise<string[]>
-  select: (properties: string[], options?: { multiple?: boolean }) => Promise<Contact[]>
+  select: (properties: string[], options?: ContactOptions) => Promise<Contact[]>
 }
 
 interface Contacts extends ContactsManager {
   ContactsManager: ContactsManager
 }
+
+type ContactManagerOptions = {}
 
 declare global {
   interface Navigator {
@@ -54,26 +64,18 @@ const resolveError = () => {
 
 const memo = <T>(func: () => T | Promise<T>) => {
   let cache: T
-  let wrapper = async () => {
+  return async () => {
     if (cache) return cache
     try {
-      const result = await func()
-      cache = result
-      return result
+      cache = await func()
+      return cache
     } catch (e) {
       throw e
     }
   }
-  return wrapper
 }
 
-const createInstance = (options?: {}) => isSupported() && window.navigator.contacts
-
-const bindFunc = <K extends keyof ContactsManager>(key: K, instance: Contacts | false | undefined): ContactsManager[K] => {
-  if (!instance) return resolveError
-  // @ts-expect-error
-  return window.navigator.contacts.ContactsManager.prototype.bind(instance)
-}
+const createInstance = (options?: ContactManagerOptions) => isSupported() && window.navigator.contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -91,31 +93,29 @@ const useIsSupported = () => {
 
 const wrap = <T extends (...args: any) => any>(func: (...args: Parameters<T>) => ReturnType<T>) => func
 
-const createHelpers = (options?: {}) => {
-  const instance = createInstance(options) || { select: resolveError, getProperties: resolveError } as ContactsManager
-  //const select = bindFunc('select', instance)
-  //const getProperties = bindFunc('getProperties', instance)
+const createHelpers = (options?: ContactManagerOptions) => {
+  const instance = createInstance(options) || {} as never
   return {
-    select: wrap<typeof instance.select>((...args) => instance.select(...args)),
-    getProperties: wrap<typeof instance.getProperties>((...args) => instance.getProperties(...args))
+    select: wrap<typeof instance.select>((...args) => (instance?.select || resolveError)(...args)),
+    getProperties: wrap<typeof instance.getProperties>((...args) => (instance?.getProperties || resolveError)(...args))
   }
 }
 
-export const useContact = (options?: {}) => {
+export const useContact = (options?: ContactManagerOptions) => {
   const { getProperties, select: selectContacts } = useMemo(() => createHelpers(options), [options])
   const [mounted, isSupported] = useIsSupported()
   const controller = useRef()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const close = useCallback(() => {
   }, [])
-  const select = useCallback(async <T extends string>(properties?: T[], options = { multiple: false }) => {
+  const select = useCallback(async <T extends ContactKey>(properties?: T[], options?: ContactOptions) => {
     if (!isSupported()) {
       return resolveError()
     }
     try {
       const props = !properties ? (await checkProperties()) : properties
       const data = await selectContacts(props, options)
-      return data
+      return data as ContactWithProperties<T>[]
     } catch (e) {
       throw e
     }
