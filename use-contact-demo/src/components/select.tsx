@@ -15,7 +15,7 @@ export const Select: React.FC<{}> = () => {
 
   const getContact = useCallback(async () => {
       try {
-        const data = await select()
+        const data = await select([], { multiple: true })
         setContacts(data)
       } catch (e) {
         alert((e as any)?.message ?? "no error")

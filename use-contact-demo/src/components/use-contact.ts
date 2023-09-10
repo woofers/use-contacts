@@ -74,7 +74,7 @@ const memo = <T>(func: () => T | Promise<T>) => {
   }
 }
 
-const createInstance = (options?: ContactManagerOptions) => isSupported() && window.navigator.contacts
+const createInstance = (options?: ContactManagerOptions) => (isSupported() && window.navigator.contacts) as Contacts
 
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
@@ -93,7 +93,7 @@ const useIsSupported = () => {
 const wrap = <T extends (...args: any) => any>(func: (...args: Parameters<T>) => ReturnType<T>) => func
 
 const createHelpers = (options?: ContactManagerOptions) => {
-  const instance = createInstance(options) || false as never
+  const instance = createInstance(options)
   return {
     select: wrap<typeof instance.select>((...args) => instance ? instance.select(...args) : resolveError()),
     getProperties: wrap<typeof instance.getProperties>((...args) => instance ? instance.getProperties(...args) : resolveError())
