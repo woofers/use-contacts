@@ -1,45 +1,5 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
-
-type ContactAddress = {
-  addressLine?: string[]
-  city?: string
-  country?: string
-  dependentLocality?: string
-  organization?: string
-  phone?: string
-  postalCode?: string
-  recipient?: string
-  region?: string
-  sortingCode?: string
-  toJSON: () => string
-}
-
-export type Contact = {
-  address: ContactAddress[]
-  email: string[]
-  icon: Blob[]
-  name: string[]
-  tel: string[]
-}
-
-type ContactWithProperties<T extends ContactKey> = {
-  [K in ([T] extends [never] ? ContactKey : T)]: Contact[K]
-}
-
-type ContactKey = keyof Contact
-
-type ContactOptions = { multiple?: boolean }
-
-interface ContactsManager {
-  getProperties: () => Promise<ContactKey[]>
-  select: (properties: string[], options?: ContactOptions) => Promise<Contact[]>
-}
-
-interface Contacts extends ContactsManager {
-  ContactsManager: ContactsManager
-}
-
-type ContactManagerOptions = {}
+import type { Contact, ContactKey, Contacts, ContactOptions, ContactManagerOptions, Simplify } from './types'
 
 declare global {
   interface Navigator {
@@ -136,7 +96,7 @@ export const useContact = (options?: ContactManagerOptions) => {
       const [promise, cancel] = resolveOnSignal(abort.signal)
       const data = await Promise.race([selectContacts(props, options), promise])
       cancel()
-      return data as ContactWithProperties<T>[]
+      return data as Simplify<Contact<T>>[]
     } catch (e) {
       if (!mounted.current) (e as { canceled?: boolean }).canceled = true
       throw e
