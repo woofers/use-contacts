@@ -15,7 +15,7 @@ export const Select: React.FC<{}> = () => {
 
   const getContact = useCallback(async () => {
       try {
-        const data = await (window?.navigator?.contacts as any)?.select?.(['name'])
+        const data = await select(['name'])
         setContacts(data)
       } catch (e) {
         alert((e as any)?.message ?? "no error")

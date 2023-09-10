@@ -22,13 +22,19 @@ export type Contact = {
   tel: string[]
 }
 
+
+interface ContactsManager {
+  getProperties: () => Promise<string[]>
+  select: (properties: string[], options?: { multiple?: boolean }) => Promise<Contact[]>
+}
+
+interface Contacts extends ContactsManager {
+  ContactsManager: ContactsManager
+}
+
 declare global {
   interface Navigator {
-    contacts?: {
-      ContactsManager: {}
-      getProperties: () => Promise<string[]>
-      select: (properties: string[], options?: { multiple?: boolean }) => Promise<Contact[]>
-    }
+    contacts?: Contacts
   }
 }
 
@@ -69,6 +75,12 @@ const checkProperties = memo(async () => {
 
 const createInstance = (options?: {}) => isSupported() && window.navigator.contacts
 
+const bindFunc = <K extends keyof ContactsManager>(key: K, instance: Contacts | false | undefined): ContactsManager[K] => {
+  if (!instance) return resolveError
+  // @ts-expect-error
+  return window.navigator.contacts.ContactsManager.prototype.bind(instance)
+}
+
 const useIsSupported = () => {
   const mounted = useRef<boolean>()
   const [data, setData] = useState(false)
@@ -86,8 +98,10 @@ const useIsSupported = () => {
 const wrap = <T extends (...args: any) => any>(func: T) => (...args: Parameters<T>) => func(...args)
 
 const createHelpers = (options?: {}) => {
-  const contacts = createInstance(options) || { select: resolveError, getProperties: resolveError }
-  return { select: wrap(contacts.select), getProperties: wrap(contacts.getProperties) }
+  const instance = createInstance(options)
+  const select = bindFunc('select', instance)
+  const getProperties = bindFunc('getProperties', instance)
+  return { select, getProperties }
 }
 
 export const useContact = (options?: {}) => {
