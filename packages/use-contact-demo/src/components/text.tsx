@@ -25,7 +25,7 @@ export const Text: React.FC<BoxProps<'div'>> = ({
     {...rest}
     as={as}
     className={cx(
-      'max-w-[300px] font-medium text-xl leading-6 my-0 tracking-[-0.25px]',
+      'font-medium text-xl leading-6 my-0 tracking-[-0.25px]',
       className
     )}
   />
