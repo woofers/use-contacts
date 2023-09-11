@@ -18,6 +18,9 @@ export const Select: React.FC<{}> = () => {
   const handleChange = useCallback((key: keyof Data) => (e: React.ChangeEvent<HTMLInputElement>) => {
     setData(data => ({ ...data, [key]: e.target.checked }))
   }, [])
+  const removeAt = useCallback((index: number) => () => {
+    setContacts(contacts => contacts.filter((_, i) => i !== index))
+  }, [])
   const getProperties = useCallback(() => {
     const { auto, multiple, ...rest } = data
     if (auto) return []
@@ -27,8 +30,10 @@ export const Select: React.FC<{}> = () => {
   const multiple = data.multiple
   const getContact = useCallback(async () => {
       try {
-          const data = await select(getProperties(), { multiple })
-        setContacts(data)
+        const data = await select(getProperties(), { multiple })
+        if (data.length > 0) {
+          setContacts(data)
+        }
       } catch (e) {
         alert((e as any)?.message ?? "no error")
       }
@@ -38,9 +43,9 @@ export const Select: React.FC<{}> = () => {
     <>
       <Box className="flex flex-col gap-y-[2px] max-w-xs rounded-lg overflow-hidden">
         <Text as="button" type="button" onClick={getContact} className="text-left px-3 py-2 bg-slate-200 text-slate-900 !text-base w-full">{isSupported() ? 'Select a contact' : 'Unsupported'}</Text>
-        {contacts.map(contact => (
-          <Text as="div" key={contact.name.join('-')} className="text-left px-3 py-2 bg-slate-200 text-slate-900 !text-base w-full">
-            <span>{contact.name?.[0] ?? "none"}</span> - <span>{JSON.stringify(contact)}</span>
+        {contacts.map((contact, i) => (
+          <Text as="button" type="button" onClick={removeAt(i)} key={contact.name.join('-')} className="text-left px-3 py-2 bg-slate-200 text-slate-900 !text-base w-full flex items-center justify-between">
+            <span><span>{contact.name?.[0] ?? "none"}</span> - <span>{JSON.stringify(contact)}</span></span> <span>X</span>
           </Text>
         ))}
       </Box>
@@ -54,7 +59,7 @@ export const Select: React.FC<{}> = () => {
       </Box>
       <Box className="flex flex-col gap-y-[2px] max-w-xs rounded-lg overflow-hidden" style={{ opacity: disabled ? 0.65 : 1 }}>
         {fields.map(field => (
-          <Text key={`field-${field}`} as="div" className="text-left px-3 py-2 bg-slate-200 text-slate-900 !text-base w-full flex justify-between">
+          <Text key={`field-${field}`} as="div" className="text-left px-3 py-2 bg-slate-200 text-slate-900 !text-base w-full flex justify-between items-center">
             <label htmlFor={field} className="select-none">{field}</label>
             <input id={field} name={field} type="checkbox" className="accent-lime-400" onChange={handleChange(field)} checked={!!data[field]} disabled={disabled} />
           </Text>)
