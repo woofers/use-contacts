@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "~/.bun/bin/bun run --cwd ../../packages/use-contacts build && next build",
+    "build": "bun run --cwd ../../packages/use-contacts build && next build",
     "start": "next start",
     "lint": "next lint"
   },
