@@ -35,7 +35,7 @@ export const Select: React.FC<{}> = () => {
           setContacts(data)
         }
       } catch (e) {
-        alert((e as any)?.message ?? "no error")
+        alert((e as { message?: string })?.message ?? "no error")
       }
   }, [select, getProperties, multiple])
   const disabled = !!data.auto
