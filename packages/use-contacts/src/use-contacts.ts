@@ -1,11 +1,11 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from 'react'
 import type {
-  Contact,
   ContactKey,
   Contacts,
   ContactOptions,
   ContactManagerOptions,
-  Simplify
+  DefinedContactKey,
+  SelectContact
 } from './types'
 
 declare global {
@@ -70,7 +70,7 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
     if (!onAbort) return
     signal.removeEventListener('abort', onAbort)
   }
-  const promise = new Promise<ContactKey[]>(resolve => {
+  const promise = new Promise<[]>(resolve => {
     onAbort = () => {
       resolve([])
     }
@@ -92,8 +92,8 @@ export const useContacts = (options?: ContactManagerOptions) => {
     controller.current.abort()
   }, [])
   const select = useCallback(
-    async <T extends ContactKey, K extends boolean = false>(
-      properties?: T[],
+    async <T extends ContactKey = ContactKey, K extends boolean = false>(
+      properties?: DefinedContactKey<T>[],
       options?: ContactOptions<K>
     ) => {
       if (!isSupported()) {
@@ -112,7 +112,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
           promise
         ])
         cancel()
-        return data as unknown as K extends false ? [Simplify<Contact<T>>] : Simplify<Contact<T>>[]
+        return data as SelectContact<T, K>
       } catch (e) {
         if (!mounted.current) (e as { canceled?: boolean }).canceled = true
         throw e
