@@ -1,21 +1,13 @@
-/// <reference lib="dom" />
-/// <reference lib="dom.iterable" />
 import React, { useState } from 'react'
-import { renderToString } from 'react-dom/server'
+import { beforeEach, afterEach, describe, it, expect } from 'bun:test'
 import {
-  act,
   render,
   fireEvent,
   waitFor,
-  waitForElementToBeRemoved,
   screen
 } from '@testing-library/react'
-import { contacts } from '../tests/mocks'
-import { useContacts } from '../src'
-import { expect, describe, it, beforeEach, afterEach } from 'bun:test'
-
-
-
+// import { useContacts } from '../'
+import { contacts } from './mocks'
 
 beforeEach(() => {
   window.navigator.contacts = contacts
