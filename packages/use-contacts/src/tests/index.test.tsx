@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { beforeEach, afterEach, describe, it, expect } from 'bun:test'
 import {
   render,
@@ -10,7 +10,7 @@ import {
 } from '@testing-library/react'
 import { useContacts } from '../'
 import { createContactManager } from './mocks'
-import type { Contact, SelectContact } from 'types'
+import type { Contact, ContactKey, SelectContact } from 'types'
 
 const contacts = [
   {
@@ -77,23 +77,22 @@ const getArray = <T, K extends boolean = false>(
   return arr as K extends false ? [T] : T[]
 }
 
-const Button = <K extends boolean = false>({
+const Button = <C extends ContactKey = ContactKey, K extends boolean = false>({
+  keys = [],
   multiple,
   forceButton
-}: { multiple?: K; forceButton?: boolean } = {}): JSX.Element => {
+}: { keys?: C[]; multiple?: K; forceButton?: boolean } = {}): JSX.Element => {
   const [fetchedContacts, setFetchedContacts] = useState(false)
   const [error, setError] = useState<ContactError | undefined>()
-  const [contacts, setContacts] = useState(
-    [] as SelectContact<'address' | 'email' | 'icon' | 'name' | 'tel', K>
-  )
-  const { isSupported, select } = useContacts()
+  const [contacts, setContacts] = useState([] as SelectContact<ContactKey, K>)
+  const { isSupported, select, cancel } = useContacts()
   const onClick = useCallback(() => {
     const open = async () => {
       try {
-        const results = await select(
-          ['address', 'email', 'icon', 'name', 'tel'],
-          { multiple }
-        )
+        const arr = (
+          keys.length > 0 ? keys : ['address', 'email', 'icon', 'name', 'tel']
+        ) as ContactKey[]
+        const results = await select(arr, { multiple })
         setContacts(results)
         setFetchedContacts(true)
       } catch (e) {
@@ -110,7 +109,10 @@ const Button = <K extends boolean = false>({
   return (
     <>
       {isSupported() || forceButton ? (
-        <button onClick={onClick}>Open contacts drawer</button>
+        <>
+          <button onClick={onClick}>Open contacts drawer</button>
+          <button onClick={cancel}>Cancel</button>
+        </>
       ) : (
         <div>Unsupported</div>
       )}
@@ -154,12 +156,12 @@ describe('useContacts', () => {
       const button = screen.getByText('Open contacts drawer')
       expect(button).toBeDefined()
       fireEvent.click(button)
-      await waitFor(() =>
-        expect(screen.getByText('Jaxson Van Doorn')).toBeDefined()
-      )
-      await waitFor(() =>
-        expect(screen.getByText('Phil Vellacott')).toBeDefined()
-      )
+      await Promise.all([
+        waitFor(() =>
+          expect(screen.getByText('Jaxson Van Doorn')).toBeDefined()
+        ),
+        waitFor(() => expect(screen.getByText('Phil Vellacott')).toBeDefined())
+      ])
       fireEvent.click(button)
       await Promise.all([
         waitForElementToBeRemoved(() => screen.queryByText('Phil Vellacott')),
@@ -186,6 +188,25 @@ describe('useContacts', () => {
         expect(screen.getByText('Error - Unsupported browser.')).toBeDefined()
       )
     })
+
+    it('select() returns no contacts when cancel() is called', async () => {
+      render(<Button keys={["name"]} />)
+      const button = screen.getByText('Open contacts drawer')
+      fireEvent.click(button)
+      fireEvent.click(screen.getByText('Cancel'))
+      await waitFor(() =>
+        expect(screen.getByText('No contacts selected')).toBeDefined()
+      )
+    })
+
+    it('select() throws type error when a field is unsupported', async () => {
+      render(<Button keys={['random'] as unknown as ContactKey[]} />)
+      const button = screen.getByText('Open contacts drawer')
+      fireEvent.click(button)
+      await waitFor(() =>
+        expect(screen.getByText('Error - Type error')).toBeDefined()
+      )
+    })
   })
 
   describe('isSupported()', () => {
@@ -197,6 +218,30 @@ describe('useContacts', () => {
       delete globalThis.navigator.contacts
       render(<Button />)
       expect(screen.getByText('Unsupported')).toBeDefined()
+    })
+  })
+
+  describe('cancel()', () => {
+    it('cancel() does not affect when called before select()', async () => {
+      render(<Button multiple />)
+      fireEvent.click(screen.getByText('Cancel'))
+      const button = screen.getByText('Open contacts drawer')
+      fireEvent.click(button)
+      await Promise.all([
+        waitFor(() =>
+          expect(screen.getByText('Jaxson Van Doorn')).toBeDefined()
+        ),
+        waitFor(() => expect(screen.getByText('Phil Vellacott')).toBeDefined())
+      ])
+      fireEvent.click(screen.getByText('Cancel'))
+      fireEvent.click(button)
+      await Promise.all([
+        waitForElementToBeRemoved(() => screen.queryByText('Phil Vellacott')),
+        waitForElementToBeRemoved(() => screen.queryByText('Jaxson Van Doorn'))
+      ])
+      await waitFor(() =>
+        expect(screen.getByText('Parker Swinton')).toBeDefined()
+      )
     })
   })
 })

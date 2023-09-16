@@ -4,9 +4,14 @@ const RESOLVE_DELAY = 10
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
+const allFields = ['address', 'email', 'icon', 'name', 'tel']
+
 const createSelectMock = (users = [] as Contact[]) => {
-  const func: Contacts['select'] = async (_properties, { multiple } = {}) => {
+  const func: Contacts['select'] = async (properties, { multiple } = {}) => {
     await delay(RESOLVE_DELAY)
+    if (properties.filter(prop => !allFields.includes(prop)).length > 0) {
+      throw new Error('Type error')
+    }
     if (multiple) {
       const first = users.pop()
       const second = users.pop()
