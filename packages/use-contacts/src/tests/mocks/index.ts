@@ -1,1 +1,1 @@
-export { contacts } from './contacts'
+export { createContactManager } from './contacts'

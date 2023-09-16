@@ -57,10 +57,8 @@ const useIsSupported = () => {
 const createHelpers = (options?: ContactManagerOptions) => {
   const instance = createInstance(options)
   return [
-    (...args) =>
-      instance ? instance.select(...args) : resolveError(),
-    (...args) =>
-      instance ? instance.getProperties(...args) : resolveError()
+    (...args) => (instance ? instance.select(...args) : resolveError()),
+    (...args) => (instance ? instance.getProperties(...args) : resolveError())
   ] as [(typeof instance)['select'], (typeof instance)['getProperties']]
 }
 
@@ -84,7 +82,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
     () => createHelpers(options),
     [options]
   )
-  const [mounted, isSupported] = useIsSupported()
+  const [mounted, supported] = useIsSupported()
   const controller = useRef<AbortController>()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const cancel = useCallback(() => {
@@ -118,8 +116,8 @@ export const useContacts = (options?: ContactManagerOptions) => {
         throw e
       }
     },
-    [selectContacts, checkProperties, isSupported, mounted]
+    [selectContacts, checkProperties, mounted]
   )
   useEffect(() => cancel, [cancel])
-  return { getProperties, select, isSupported, cancel }
+  return { getProperties, select, isSupported: supported, cancel }
 }

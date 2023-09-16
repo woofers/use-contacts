@@ -1,11 +1,21 @@
 import type { ContactManagerOptions, Contacts, Contact } from '../../types'
 
-const selectMock: Contacts['select'] = async (_properties, { multiple }) => {
-  const data = { name: ['Jaxson'] } as Contact
-  if (multiple) {
-    return [data, data]
+const RESOLVE_DELAY = 10
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+const createSelectMock = (users = [] as Contact[]) => {
+  const func: Contacts['select'] = async (_properties, { multiple } = {}) => {
+    await delay(RESOLVE_DELAY)
+    if (multiple) {
+      const first = users.pop()
+      const second = users.pop()
+      return [first, second].filter(Boolean)
+    }
+    const user = users.pop()
+    return [user].filter(Boolean)
   }
-  return [data]
+  return func
 }
 
 const getPropertiesMock: Contacts['getProperties'] = async () => {
@@ -13,11 +23,14 @@ const getPropertiesMock: Contacts['getProperties'] = async () => {
 }
 
 class Manager {
-  constructor(_options?: ContactManagerOptions) {
+  private users: Contact[]
 
+  constructor(_options?: ContactManagerOptions, users = [] as Contact[]) {
+    this.users = users.reverse()
   }
 
-  async select(...args: Parameters<typeof selectMock>) {
+  async select(...args: Parameters<Contacts['select']>) {
+    const selectMock = createSelectMock(this.users)
     const data = await selectMock(...args)
     return data
   }
@@ -30,15 +43,14 @@ class Manager {
 
 const cast = <T>(value: unknown) => value as T
 
-const createContactManager = () => {
-  const instance = new Manager()
+export const createContactManager = (users = [] as Contact[]) => {
+  const instance = new Manager({}, users)
   const select: Contacts['select'] = (...args) => instance.select(...args)
-  const getProperties: Contacts['getProperties'] = (...args) => instance.getProperties(...args)
+  const getProperties: Contacts['getProperties'] = (...args) =>
+    instance.getProperties(...args)
   return {
-      ['ContactsManager']: cast<Contacts['ContactsManager']>(Manager),
-      select,
-      getProperties
+    ['ContactsManager']: cast<Contacts['ContactsManager']>(Manager),
+    select,
+    getProperties
   } as typeof window.navigator.contacts
 }
-
-export const contacts = createContactManager()

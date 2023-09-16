@@ -1,2 +1,5 @@
 [test]
 preload = "./happydom.ts"
+
+[define]
+"__isDev__" = "false"
