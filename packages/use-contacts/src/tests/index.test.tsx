@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { beforeEach, afterEach, describe, it, expect } from 'bun:test'
 import {
   render,
@@ -75,6 +75,34 @@ const getArray = <T, K extends boolean = false>(
     return false
   }
   return arr as K extends false ? [T] : T[]
+}
+
+const Properties: React.FC<{}> = () => {
+  const { getProperties } = useContacts()
+  const [properties, setProperties] = useState([] as string[])
+  const [error, setError] = useState<ContactError | undefined>()
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      try {
+        const props = await getProperties()
+        if (mounted) setProperties(props)
+      } catch (e) {
+        if (mounted && isError(e)) setError(e)
+      }
+    }
+    void load()
+    return () => {
+      mounted = false
+    }
+  }, [getProperties])
+  return (
+    <>
+      {properties.length > 0 && properties.map(property => <div key={property}>{property}</div>)}
+      {!!error && <p>Error - {error.message}</p>}
+      {!error && properties.length <= 0 && <div>Fetching properties</div>}
+    </>
+  )
 }
 
 const Button = <C extends ContactKey = ContactKey, K extends boolean = false>({
@@ -189,16 +217,6 @@ describe('useContacts', () => {
       )
     })
 
-    it('select() returns no contacts when cancel() is called', async () => {
-      render(<Button keys={["name"]} />)
-      const button = screen.getByText('Open contacts drawer')
-      fireEvent.click(button)
-      fireEvent.click(screen.getByText('Cancel'))
-      await waitFor(() =>
-        expect(screen.getByText('No contacts selected')).toBeDefined()
-      )
-    })
-
     it('select() throws type error when a field is unsupported', async () => {
       render(<Button keys={['random'] as unknown as ContactKey[]} />)
       const button = screen.getByText('Open contacts drawer')
@@ -218,6 +236,26 @@ describe('useContacts', () => {
       delete globalThis.navigator.contacts
       render(<Button />)
       expect(screen.getByText('Unsupported')).toBeDefined()
+    })
+  })
+
+  describe('getProperties()', () => {
+    it('getProperties() returns supported fields', async () => {
+      render(<Properties />)
+      expect(screen.getByText('Fetching properties')).toBeDefined()
+      await Promise.all([
+        waitFor(() => expect(screen.getByText('address')).toBeDefined()),
+        waitFor(() => expect(screen.getByText('email')).toBeDefined()),
+        waitFor(() => expect(screen.getByText('icon')).toBeDefined()),
+        waitFor(() => expect(screen.getByText('name')).toBeDefined()),
+        waitFor(() => expect(screen.getByText('tel')).toBeDefined())
+      ])
+    })
+
+    it('getProperties() throws an error when unsupported', async () => {
+      delete globalThis.navigator.contacts
+      render(<Properties />)
+      expect(screen.getByText('Error - Unsupported browser.')).toBeDefined()
     })
   })
 
@@ -241,6 +279,16 @@ describe('useContacts', () => {
       ])
       await waitFor(() =>
         expect(screen.getByText('Parker Swinton')).toBeDefined()
+      )
+    })
+
+    it('cancel() cancels select() and returns no contacts when interrupted', async () => {
+      render(<Button keys={["name"]} />)
+      const button = screen.getByText('Open contacts drawer')
+      fireEvent.click(button)
+      fireEvent.click(screen.getByText('Cancel'))
+      await waitFor(() =>
+        expect(screen.getByText('No contacts selected')).toBeDefined()
       )
     })
   })

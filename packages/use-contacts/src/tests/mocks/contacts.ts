@@ -24,6 +24,7 @@ const createSelectMock = (users = [] as Contact[]) => {
 }
 
 const getPropertiesMock: Contacts['getProperties'] = async () => {
+  await delay(RESOLVE_DELAY)
   return ['address', 'email', 'icon', 'name', 'tel']
 }
 
