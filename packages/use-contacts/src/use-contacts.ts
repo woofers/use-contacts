@@ -83,7 +83,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
     () => createHelpers(options),
     [options]
   )
-  const [mounted, supported] = useIsSupported()
+  const [mounted, isSupported] = useIsSupported()
   const controller = useRef<AbortController>()
   const checkProperties = useMemo(() => memo(getProperties), [getProperties])
   const cancel = useCallback(() => {
@@ -95,9 +95,6 @@ export const useContacts = (options?: ContactManagerOptions) => {
       properties?: DefinedContactKey<T>[],
       options?: ContactOptions<K>
     ) => {
-      if (!isSupported()) {
-        return resolveError()
-      }
       const abort = new AbortController()
       controller.current = abort
       try {
@@ -113,6 +110,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
         cancel()
         return data as SelectContact<T, K>
       } catch (e) {
+        // call cancel() here
         if (!mounted.current) (e as { canceled?: boolean }).canceled = true
         throw e
       }
@@ -120,5 +118,5 @@ export const useContacts = (options?: ContactManagerOptions) => {
     [selectContacts, checkProperties, mounted]
   )
   useEffect(() => cancel, [cancel])
-  return { getProperties, select, isSupported: supported, cancel }
+  return { getProperties, select, isSupported, cancel }
 }
