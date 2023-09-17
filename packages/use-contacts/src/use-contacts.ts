@@ -67,6 +67,7 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
   const cancel = () => {
     if (!onAbort) return
     signal.removeEventListener('abort', onAbort)
+    onAbort()
   }
   const promise = new Promise<[]>(resolve => {
     onAbort = () => {
