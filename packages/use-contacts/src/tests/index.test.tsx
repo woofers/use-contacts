@@ -132,7 +132,7 @@ const Button = <C extends ContactKey = ContactKey, K extends boolean = false>({
       }
     }
     void open()
-  }, [multiple])
+  }, [multiple, select, keys])
 
   const list = getArray(contacts, multiple)
 
@@ -243,7 +243,7 @@ describe('useContacts', () => {
       const contacts = globalThis.navigator.contacts
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      container.innerHTML = renderToString(<Button />)
+      container.innerHTML = renderToString(<Button /> as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       globalThis.navigator.contacts = contacts
@@ -253,7 +253,7 @@ describe('useContacts', () => {
     it('isSupported() is handled on SSR when unsupported', async () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      container.innerHTML = renderToString(<Button />)
+      container.innerHTML = renderToString(<Button /> as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       render(<Button />, { container, hydrate: true })
