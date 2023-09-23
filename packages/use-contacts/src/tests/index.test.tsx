@@ -243,6 +243,7 @@ describe('useContacts', () => {
       const contacts = globalThis.navigator.contacts
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       container.innerHTML = renderToString(<Button /> as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
@@ -253,6 +254,7 @@ describe('useContacts', () => {
     it('isSupported() is handled on SSR when unsupported', async () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       container.innerHTML = renderToString(<Button /> as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
