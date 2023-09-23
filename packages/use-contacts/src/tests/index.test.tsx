@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { renderToString } from 'react-dom/server'
-import { beforeEach, afterEach, describe, it, expect, jest, spyOn } from 'bun:test'
+import { beforeEach, afterEach, describe, it, expect, spyOn } from 'bun:test'
 import {
   render,
   fireEvent,
