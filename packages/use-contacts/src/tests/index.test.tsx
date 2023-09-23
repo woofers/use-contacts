@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
 import { renderToString } from 'react-dom/server'
-import { beforeEach, afterEach, describe, it, expect, jest } from 'bun:test'
+import { beforeEach, afterEach, describe, it, expect, jest, spyOn } from 'bun:test'
 import {
   render,
   fireEvent,
@@ -317,12 +317,7 @@ describe('useContacts', () => {
     it('cancel() is called when unmounted', async () => {
       const controller = globalThis.AbortController
       globalThis.AbortController = AbortController as unknown as typeof globalThis.AbortController
-      const originalAbort = globalThis.AbortController.prototype.abort
-      const cancel = jest.fn()
-      globalThis.AbortController.prototype.abort = function () {
-        cancel()
-        originalAbort.bind(this)()
-      }
+      const cancel = spyOn(globalThis.AbortController.prototype, 'abort')
       const { unmount } = render(<Button />)
       fireEvent.click(screen.getByText('Open contacts drawer'))
       const removal = waitForElementToBeRemoved(() =>
