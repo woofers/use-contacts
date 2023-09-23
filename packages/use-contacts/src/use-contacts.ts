@@ -68,6 +68,7 @@ const resolveOnSignal = (signal: AbortController['signal']) => {
     if (!onAbort) return
     signal.removeEventListener('abort', onAbort)
     onAbort()
+    onAbort = void 0
   }
   const promise = new Promise<[]>(resolve => {
     onAbort = () => {
@@ -97,12 +98,12 @@ export const useContacts = (options?: ContactManagerOptions) => {
     ) => {
       const abort = new AbortController()
       controller.current = abort
+      const [promise, cancel] = resolveOnSignal(abort.signal)
       try {
         const props =
           !properties || !properties.length
             ? await checkProperties()
             : properties
-        const [promise, cancel] = resolveOnSignal(abort.signal)
         const data = await Promise.race([
           selectContacts(props, options),
           promise
@@ -110,7 +111,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
         cancel()
         return data as SelectContact<T, K>
       } catch (e) {
-        // call cancel() here
+        cancel()
         if (!mounted.current) (e as { canceled?: boolean }).canceled = true
         throw e
       }

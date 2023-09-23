@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react'
-import { beforeEach, afterEach, describe, it, expect } from 'bun:test'
+import { renderToString } from 'react-dom/server'
+import { beforeEach, afterEach, describe, it, expect, jest } from 'bun:test'
 import {
   render,
   fireEvent,
@@ -11,6 +12,7 @@ import {
 import { useContacts } from '../'
 import { createContactManager } from './mocks'
 import type { Contact, ContactKey, SelectContact } from 'types'
+import { AbortController } from 'happy-dom'
 
 const contacts = [
   {
@@ -237,6 +239,26 @@ describe('useContacts', () => {
       render(<Button />)
       expect(screen.getByText('Unsupported')).toBeDefined()
     })
+    it('isSupported() is handled on SSR when supported', async () => {
+      const contacts = globalThis.navigator.contacts
+      delete globalThis.navigator.contacts
+      const container = document.createElement('div')
+      container.innerHTML = renderToString(<Button />)
+      document.body.appendChild(container)
+      expect(screen.getByText('Unsupported'))
+      globalThis.navigator.contacts = contacts
+      render(<Button />, { container, hydrate: true })
+      expect(screen.getByText('Open contacts drawer'))
+    })
+    it('isSupported() is handled on SSR when unsupported', async () => {
+      delete globalThis.navigator.contacts
+      const container = document.createElement('div')
+      container.innerHTML = renderToString(<Button />)
+      document.body.appendChild(container)
+      expect(screen.getByText('Unsupported'))
+      render(<Button />, { container, hydrate: true })
+      expect(screen.getByText('Unsupported'))
+    })
   })
 
   describe('getProperties()', () => {
@@ -290,6 +312,27 @@ describe('useContacts', () => {
       await waitFor(() =>
         expect(screen.getByText('No contacts selected')).toBeDefined()
       )
+    })
+
+    it('cancel() is called when unmounted', async () => {
+      const controller = globalThis.AbortController
+      globalThis.AbortController = AbortController as unknown as typeof globalThis.AbortController
+      const originalAbort = globalThis.AbortController.prototype.abort
+      const cancel = jest.fn()
+      globalThis.AbortController.prototype.abort = function () {
+        cancel()
+        originalAbort.bind(this)()
+      }
+      const { unmount } = render(<Button />)
+      fireEvent.click(screen.getByText('Open contacts drawer'))
+      const removal = waitForElementToBeRemoved(() =>
+        screen.queryByText('Open contacts drawer')
+      )
+      expect(cancel).toHaveBeenCalledTimes(0)
+      unmount()
+      await removal
+      expect(cancel).toHaveBeenCalledTimes(1)
+      globalThis.AbortController = controller
     })
   })
 })
