@@ -116,7 +116,31 @@ const App = () => {
 
 ## Methods
 
-- `select({}) => Promise<{}>'`
+- ```
+select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: K }) => Promise<Pick<{
+  address?: ContactAddress[]
+  email?: string[]
+  icon?: Blob[]
+  name: string[]
+  tel?: string[]
+}, T>[] | >'
+````
+
+```tsx
+type ContactAddress = {
+  addressLine?: string[]
+  city?: string
+  country?: string
+  dependentLocality?: string
+  organization?: string
+  phone?: string
+  postalCode?: string
+  recipient?: string
+  region?: string
+  sortingCode?: string
+  toJSON: () => string
+}
+```
 
   Opens the EyeDropper API in supported browsers and returns a
   promise which will resolve with the selected color.  Alternatively the promise will be rejected if
@@ -126,7 +150,7 @@ const App = () => {
   6-digit HEX value is returned, the current Chrome implementation
   returns a `rgba` value.
 
-- `select({}) => Promise<{}>'`
+- `getProperties() => Promise<("name" | "address" | "email" | "icon" | "tel")[]>'`
 
   This method closes the Contact Picker API selector if it is open and
   resolves the promise from `select` with no results. Otherwise this
