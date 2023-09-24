@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   title: 'useContact',
-  description: '',
+  description: ''
 } satisfies Metadata
 
 const RootLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {

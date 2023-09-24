@@ -100,7 +100,8 @@ const Properties: React.FC<{}> = () => {
   }, [getProperties])
   return (
     <>
-      {properties.length > 0 && properties.map(property => <div key={property}>{property}</div>)}
+      {properties.length > 0 &&
+        properties.map(property => <div key={property}>{property}</div>)}
       {!!error && <p>Error - {error.message}</p>}
       {!error && properties.length <= 0 && <div>Fetching properties</div>}
     </>
@@ -244,7 +245,7 @@ describe('useContacts', () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      container.innerHTML = renderToString(<Button /> as any)
+      container.innerHTML = renderToString((<Button />) as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       globalThis.navigator.contacts = contacts
@@ -255,7 +256,7 @@ describe('useContacts', () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      container.innerHTML = renderToString(<Button /> as any)
+      container.innerHTML = renderToString((<Button />) as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       render(<Button />, { container, hydrate: true })
@@ -307,7 +308,7 @@ describe('useContacts', () => {
     })
 
     it('cancel() cancels select() and returns no contacts when interrupted', async () => {
-      render(<Button keys={["name"]} />)
+      render(<Button keys={['name']} />)
       const button = screen.getByText('Open contacts drawer')
       fireEvent.click(button)
       fireEvent.click(screen.getByText('Cancel'))
@@ -318,7 +319,8 @@ describe('useContacts', () => {
 
     it('cancel() is called when unmounted', async () => {
       const controller = globalThis.AbortController
-      globalThis.AbortController = AbortController as unknown as typeof globalThis.AbortController
+      globalThis.AbortController =
+        AbortController as unknown as typeof globalThis.AbortController
       const cancel = spyOn(globalThis.AbortController.prototype, 'abort')
       const { unmount } = render(<Button />)
       fireEvent.click(screen.getByText('Open contacts drawer'))

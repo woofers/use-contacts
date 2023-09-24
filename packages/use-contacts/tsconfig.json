@@ -26,6 +26,7 @@
     "removeComments": false,
     "sourceMap": false,
     "noUnusedLocals": false,
+    "noUncheckedIndexedAccess": true,
     "strict": false,
     "baseUrl": "./src"
 
