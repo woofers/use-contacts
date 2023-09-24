@@ -53,10 +53,11 @@ const isNotCanceled = <T,>(err: ContactError | T): err is ContactError => isErro
 const hasContacts = <T,>(array: readonly T[]): array is [T, ...T[]] => array.length > 0
 
 const properties = ['name', 'email', 'tel', 'icon', 'address'] satisfies ContactKey[]
+const options = { multiple: false } as const
 
 const App = () => {
   const { select, getProperties, isSupported, cancel } = useContacts()
-  const [contacts, setContacts] = useState<SelectContact<typeof properties, { multiple: false }>>([])
+  const [contacts, setContacts] = useState<SelectContact<typeof properties, typeof options>>([])
   const [error, setError] = useState<ContactError>()
   const showSupportedProperties = useCallback(() => {
     const alertProperties = async () => {
@@ -72,7 +73,7 @@ const App = () => {
   const selectContact = useCallback(() => {
     const updateContacts = async () => {
       try {
-        const data = await select(properties, { multiple: false })
+        const data = await select(properties, options)
         if (data.length > 0) {
           setContacts(data)
         }
@@ -90,7 +91,6 @@ const App = () => {
             <li key={contact.name.join(' ')}>
               {contact.name} - {contact.tel}{' '}
               {contact.email && `(${contact.email})`}
-              {contact.address.join('')}
             </li>
           ))}
         </ul>
@@ -126,13 +126,17 @@ const App = () => {
   6-digit HEX value is returned, the current Chrome implementation
   returns a `rgba` value.
 
-- `close() => void`
+- `select({}) => Promise<{}>'`
 
   This method closes the Contact Picker API selector if it is open and
   resolves the promise from `select` with no results. Otherwise this
   performs a no-op.  **NOTE**: The Contact Picker will still remain open
   as there is no way in any browser to close this programmatically, 
   only the user can dismiss the Contact Picker, however the promise will be resolved and cleaned up.
+
+- `cancel() => void`
+  
+  a
 
 - `isSupported() => boolean`
 
