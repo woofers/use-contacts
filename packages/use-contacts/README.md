@@ -116,7 +116,9 @@ const App = () => {
 
 ## Methods
 
-- ```
+- ddd
+
+```
 select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: K }) => Promise<Pick<{
   address?: ContactAddress[]
   email?: string[]
@@ -124,7 +126,7 @@ select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] |
   name: string[]
   tel?: string[]
 }, T>[] | >'
-````
+```
 
 ```tsx
 type ContactAddress = {
