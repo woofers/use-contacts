@@ -15,7 +15,7 @@ into an easy-to-use React hook.  This API is currently only available in Chromiu
 - Under 690 bytes GZipped
 - Safely detect and fallback on unsupported browsers using `isSupported` method.
 - Closes eye dropper when corresponding component is unmounted.
-- Provides explicit `close` method to cancel promise (contact picker still remains open).
+- Provides explicit `cancel` method to abort the promise (contact picker still remains open).
 
 ## Installation
 
@@ -121,7 +121,7 @@ const App = () => {
 - `select``
 
 ```tsx
-select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: K }) => 
+select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: boolean }) => 
   Promise<Pick<{
     address?: ContactAddress[]
     email?: string[]
@@ -131,25 +131,33 @@ select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] |
   }, T>[] | []>'
 ```
 
-  Opens the EyeDropper API in supported browsers and returns a
-  promise which will resolve with the selected color.  Alternatively the promise will be rejected if
-  the user cancels the operation, for instance by hitting escape.
-  Additionally if the browser does not support the API, the
-  promise is rejected. While the spec currently indicates that a
-  6-digit HEX value is returned, the current Chrome implementation
-  returns a `rgba` value.
+  Opens the Contact Picker API in supported browsers and returns a
+  promise which will resolve with an array of contacts. 
+
+  You can specify a list of properties as string keys using 
+  with the `properties` arg.  If you pass an unsupported property,
+  this will throw a Type error. If you want to auto-detect and use all supported properties
+  call this without a `properties` argument or an empty array `[]`.  
+
+  The `options` arg can be used to specify if the Contact Picker
+  should be a multi-select using `multiple`. 
+  
+  If you are using TypeScript, the correct array/contact object will be inferred
+  from the arguments that you pass.  For instance `select(['name', 'tel'], { multiple: false })`
+  will be typed as `[{ name: string[]; tel?: string[] }]`.
 
 - `getProperties() => Promise<("name" | "address" | "email" | "icon" | "tel")[]>'`
 
-  This method closes the Contact Picker API selector if it is open and
-  resolves the promise from `select` with no results. Otherwise this
-  performs a no-op.  **NOTE**: The Contact Picker will still remain open
-  as there is no way in any browser to close this programmatically, 
-  only the user can dismiss the Contact Picker, however the promise will be resolved and cleaned up.
+  Returns the available properties supported by the current browser and device as an array.
 
 - `cancel() => void`
   
-  a
+  Used to cancel the promise returned from `select`, it will resolve with an empty array of contacts.
+  Otherwise if the promise is not pending, this performs a no-op.  
+  **NOTE**: The Contact Picker will still remain open
+  as there is no way in any browser to close this programmatically, 
+  only the user can dismiss the Contact Picker
+  however the promise will be resolved and cleaned up.
 
 - `isSupported() => boolean`
 
@@ -158,6 +166,11 @@ select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] |
 ### Types
 
 You import the following types from `import type { Contact, SelectContact, ContactKey, ContactAddress } from 'use-contacts'`
+
+`SelectContact<T extends ContactKey[] | ContactKey, K extends { multiple?: boolean }>` - Can be used to type useState
+by inferring or specifying the args passed to `select`.  For instance `SelectContact<'name' | 'tel', { multiple: true }>` maps to `{ name: string[]; tel?: string[] }[]`.
+
+Alternatively you can leverage the full-types as-well:
 
 ```tsx
 type Contact = {
