@@ -63,7 +63,9 @@ const App = () => {
     const alertProperties = async () => {
       try {
         const props = await getProperties()
-        alert(`Supported contact fields are ${props.join(', ')}`)
+        if (typeof window !== 'undefined') {
+          alert(`Supported contact fields are ${props.join(', ')}`)
+        }
       } catch (e) {
         setError(e)
       }
@@ -97,10 +99,10 @@ const App = () => {
       )}
       {isSupported() ? (
         <button type="button" onClick={selectContact}>
-          {isSupported() ? 'Select a contact' : 'Unsupported'}
+          Select a contact
         </button>
       ) : (
-        <div>Contacts API not supported in this browser</div>
+        <div>Contact Picker API not supported in this browser</div>
       )}
       {isSupported() && (
         <button type="button" onClick={showSupportedProperties}>
@@ -116,32 +118,17 @@ const App = () => {
 
 ## Methods
 
-- ddd
-
-```
-select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: K }) => Promise<Pick<{
-  address?: ContactAddress[]
-  email?: string[]
-  icon?: Blob[]
-  name: string[]
-  tel?: string[]
-}, T>[] | >'
-```
+- `select``
 
 ```tsx
-type ContactAddress = {
-  addressLine?: string[]
-  city?: string
-  country?: string
-  dependentLocality?: string
-  organization?: string
-  phone?: string
-  postalCode?: string
-  recipient?: string
-  region?: string
-  sortingCode?: string
-  toJSON: () => string
-}
+select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: K }) => 
+  Promise<Pick<{
+    address?: ContactAddress[]
+    email?: string[]
+    icon?: Blob[]
+    name: string[]
+    tel?: string[]
+  }, T>[] | []>'
 ```
 
   Opens the EyeDropper API in supported browsers and returns a
@@ -167,3 +154,33 @@ type ContactAddress = {
 - `isSupported() => boolean`
 
   Determines if the Contact Picker API is supported in the current browser.
+
+### Types
+
+You import the following types from `import type { Contact, SelectContact, ContactKey, ContactAddress } from 'use-contacts'`
+
+```tsx
+type Contact = {
+  address?: ContactAddress[]
+  email?: string[]
+  icon?: Blob[]
+  name: string[]
+  tel?: string[]
+}
+
+type ContactKey = 'name' | 'address' | 'email' | 'icon' | 'tel'
+
+type ContactAddress = {
+  addressLine?: string[]
+  city?: string
+  country?: string
+  dependentLocality?: string
+  organization?: string
+  phone?: string
+  postalCode?: string
+  recipient?: string
+  region?: string
+  sortingCode?: string
+  toJSON: () => string
+}
+```

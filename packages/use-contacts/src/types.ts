@@ -1,4 +1,4 @@
-type ContactAddress = {
+export type ContactAddress = {
   addressLine?: string[]
   city?: string
   country?: string
