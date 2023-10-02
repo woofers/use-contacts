@@ -10,11 +10,11 @@ into an easy-to-use React hook.  This API is currently only available in Chromiu
 ## Features
 
 - Supports Server-Side rendering.
-- Test coverage with unit and integration tests.
-- TypeScript support
-- Under 690 bytes GZipped
+- Test coverage with unit tests.
+- TypeScript support with type inference based on parameters.
+- Under 690 bytes GZipped.
 - Safely detect and fallback on unsupported browsers using `isSupported` method.
-- Closes eye dropper when corresponding component is unmounted.
+- Cancels `select` when component is unmounted.
 - Provides explicit `cancel` method to abort the promise (contact picker still remains open).
 
 ## Installation
@@ -118,33 +118,33 @@ const App = () => {
 
 ## Methods
 
-- `select``
+  ```tsx
+  select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: boolean }) => 
+    Promise<Pick<{
+      address?: ContactAddress[]
+      email?: string[]
+      icon?: Blob[]
+      name: string[]
+      tel?: string[]
+    }, T>[] | []>'
+  ```
 
-```tsx
-select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: boolean }) => 
-  Promise<Pick<{
-    address?: ContactAddress[]
-    email?: string[]
-    icon?: Blob[]
-    name: string[]
-    tel?: string[]
-  }, T>[] | []>'
-```
+  - `select`
 
-  Opens the Contact Picker API in supported browsers and returns a
-  promise which will resolve with an array of contacts. 
+    Opens the Contact Picker API in supported browsers and returns a
+    promise which will resolve with an array of contacts. 
 
-  You can specify a list of properties as string keys using 
-  with the `properties` arg.  If you pass an unsupported property,
-  this will throw a Type error. If you want to auto-detect and use all supported properties
-  call this without a `properties` argument or an empty array `[]`.  
+    You can specify a list of properties as string keys using 
+    with the `properties` arg.  If you pass an unsupported property,
+    this will throw a Type error. If you want to auto-detect and use all supported properties
+    call this without a `properties` argument or an empty array `[]`.  
 
-  The `options` arg can be used to specify if the Contact Picker
-  should be a multi-select using `multiple`. 
-  
-  If you are using TypeScript, the correct array/contact object will be inferred
-  from the arguments that you pass.  For instance `select(['name', 'tel'], { multiple: false })`
-  will be typed as `[{ name: string[]; tel?: string[] }]`.
+    The `options` arg can be used to specify if the Contact Picker
+    should be a multi-select using `multiple`. 
+    
+    If you are using TypeScript, the correct array/contact object will be inferred
+    from the arguments that you pass.  For instance `select(['name', 'tel'], { multiple: false })`
+    will be typed as `[{ name: string[]; tel?: string[] }]`.
 
 - `getProperties() => Promise<("name" | "address" | "email" | "icon" | "tel")[]>'`
 
@@ -167,8 +167,11 @@ select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] |
 
 You import the following types from `import type { Contact, SelectContact, ContactKey, ContactAddress } from 'use-contacts'`
 
-`SelectContact<T extends ContactKey[] | ContactKey, K extends { multiple?: boolean }>` - Can be used to type useState
-by inferring or specifying the args passed to `select`.  For instance `SelectContact<'name' | 'tel', { multiple: true }>` maps to `{ name: string[]; tel?: string[] }[]`.
+- `SelectContact<T extends ContactKey[] | ContactKey, K extends { multiple?: boolean }>`
+  
+  Can be used to type useState by inferring or specifying the args passed to `select`.  
+  
+  For instance `SelectContact<'name' | 'tel', { multiple: true }>` maps to `{ name: string[]; tel?: string[] }[]`.
 
 Alternatively you can leverage the full-types as-well:
 
