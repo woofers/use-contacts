@@ -1,8 +1,7 @@
 {
-  "name": "use-contact",
-  "version": "0.1.1",
-  "description": "",
-  "main": "index.js",
+  "name": "use-contacts",
+  "version": "1.0.0",
+  "description": "Typesafe Contact Picker API wrapper for React",
   "files": [
     "index.js",
     "package.json",
