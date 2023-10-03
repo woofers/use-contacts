@@ -12,6 +12,11 @@ jobs:
       uses: oven-sh/setup-bun@v1
       with:
         bun-version: latest
+    - name: Use Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 'v18'
+        registry-url: 'https://registry.npmjs.org'
     - name: Deploy Info
       env:
         GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -26,7 +31,7 @@ jobs:
       run: bun build-site
     - name: Publish
       if: startsWith(github.ref, 'refs/tags/')
-      run: bun publish --access public
+      run: npm publish --access public
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
     - name: Publish Demo
