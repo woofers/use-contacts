@@ -4,8 +4,8 @@ export const Box = <T extends React.ElementType<any> = 'div'>(
   props: { as?: T } & React.ComponentPropsWithoutRef<T>
 ) => {
   const { as, ...rest } = props
-  const Comp = as || 'div'
-  return <Comp {...rest} />
+  const Comp = (as || 'div') as any
+  return <Comp  {...rest} />
 }
 
 export type BoxProps<T extends React.ElementType<any>> = React.ComponentProps<
