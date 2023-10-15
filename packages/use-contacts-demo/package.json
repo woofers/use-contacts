@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": " next build",
-    "start": "next start",
-    "lint": "next lint",
-    "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
+    "build-site": " next build",
+    "start-site": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@types/node": "20.6.0",

@@ -36,8 +36,7 @@
     "build:dev:module": "bun build ./src/index.ts --outdir ./lib --external react --minify --define __isDev__=true --entry-naming=use-contacts.dev.mjs",
     "build:dev:legacy": "esbuild ./lib/use-contacts.dev.mjs --outfile=./lib/use-contacts.dev.js --format=cjs --minify",
     "build:legacy": "esbuild ./lib/use-contacts.mjs --outfile=./lib/use-contacts.js --format=cjs --minify",
-    "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.dev.mjs lib/use-contacts.mjs",
-    "format": "prettier --write \"{src,tests}/**/*.{jsx,js,tsx,ts}\""
+    "clean": "rimraf lib/use-contacts.dev.js lib/use-contacts.js lib/use-contacts.dev.mjs lib/use-contacts.mjs"
   },
   "peerDependencies": {
     "react": "^0.13.0 || ^0.14.0 || >=15"

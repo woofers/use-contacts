@@ -8,12 +8,19 @@
     "README.md"
   ],
   "scripts": {
-    "build-site": "bun run --cwd packages/use-contacts-demo build",
-    "build": "bun run --cwd packages/use-contacts build",
-    "test": "bun run --cwd packages/use-contacts test"
+    "build-site": "turbo run build-site",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "format": "prettier --write \"packages/**/{src,tests}/**/*.{jsx,js,tsx,ts}\""
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
-  "workspaces": ["packages/*"]
+  "workspaces": ["packages/*"],
+  "devDependencies": {
+    "prettier": "^3.0.3",
+    "turbo": "^1.10.15"
+  }
 }

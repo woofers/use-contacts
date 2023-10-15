@@ -130,7 +130,8 @@ const ensureDefined = <T extends {}>(contact: T) => {
   return contact
 }
 
-const ensureArrayDefined = (data: CompleteContact[]) => data.reduce((contacts, next) => {
-  contacts.push(ensureDefined(next))
-  return contacts
-}, [] as CompleteContact[])
+const ensureArrayDefined = (data: CompleteContact[]) =>
+  data.reduce((contacts, next) => {
+    contacts.push(ensureDefined(next))
+    return contacts
+  }, [] as CompleteContact[])
