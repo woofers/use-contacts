@@ -18,7 +18,7 @@ export type CompleteContact = {
   icon?: Blob[]
   name: string[]
   tel?: string[]
-} & {}
+}
 
 export type ContactKey = keyof CompleteContact
 
