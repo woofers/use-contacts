@@ -5,7 +5,8 @@ import type {
   ContactOptions,
   ContactManagerOptions,
   DefinedContactKey,
-  SelectContact
+  SelectContact,
+  CompleteContact
 } from './types'
 
 declare global {
@@ -109,7 +110,7 @@ export const useContacts = (options?: ContactManagerOptions) => {
           promise
         ])
         cancel()
-        return data as SelectContact<T, K>
+        return ensureArrayDefined(data) as SelectContact<T, K>
       } catch (e) {
         cancel()
         if (!mounted.current) (e as { canceled?: boolean }).canceled = true
@@ -121,3 +122,15 @@ export const useContacts = (options?: ContactManagerOptions) => {
   useEffect(() => cancel, [cancel])
   return { getProperties, select, isSupported, cancel }
 }
+
+const ensureDefined = <T extends {}>(contact: T) => {
+  Object.keys(contact).forEach(key => {
+    contact[key] = contact[key] || []
+  })
+  return contact
+}
+
+const ensureArrayDefined = (data: CompleteContact[]) => data.reduce((contacts, next) => {
+  contacts.push(ensureDefined(next))
+  return contacts
+}, [] as CompleteContact[])
