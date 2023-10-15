@@ -7,6 +7,10 @@
 Implements the [Contact Picker API](https://developer.mozilla.org/en-US/docs/Web/API/Contact_Picker_API)
 into an easy-to-use React hook.  This API is currently only available in Chromium based browsers and enabled on iOS Safari via a feature flag.
 
+
+https://github.com/woofers/react-sheet-slide/assets/7284672/9ad2f50d-7c1e-451b-88e4-4f7ccb34ccb0
+
+
 ## Features
 
 - Supports Server-Side rendering.
@@ -119,7 +123,7 @@ const App = () => {
 ## Methods
 
   ```tsx
-  select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: boolean }) => 
+  select<T extends "name" | "address" | "email" | "icon" | "tel">(properties: [] | T[], options?: { multiple?: boolean }) =>
     Promise<Pick<{
       address?: ContactAddress[]
       email?: string[]
@@ -132,16 +136,16 @@ const App = () => {
   - `select`
 
     Opens the Contact Picker API in supported browsers and returns a
-    promise which will resolve with an array of contacts. 
+    promise which will resolve with an array of contacts.
 
-    You can specify a list of properties as string keys using 
+    You can specify a list of properties as string keys using
     with the `properties` arg.  If you pass an unsupported property,
     this will throw a Type error. If you want to auto-detect and use all supported properties
-    call this without a `properties` argument or an empty array `[]`.  
+    call this without a `properties` argument or an empty array `[]`.
 
     The `options` arg can be used to specify if the Contact Picker
-    should be a multi-select using `multiple`. 
-    
+    should be a multi-select using `multiple`.
+
     If you are using TypeScript, the correct array/contact object will be inferred
     from the arguments that you pass.  For instance `select(['name', 'tel'], { multiple: false })`
     will be typed as `[{ name: string[]; tel?: string[] }]`.
@@ -151,11 +155,11 @@ const App = () => {
   Returns the available properties supported by the current browser and device as an array.
 
 - `cancel() => void`
-  
+
   Used to cancel the promise returned from `select`, it will resolve with an empty array of contacts.
-  Otherwise if the promise is not pending, this performs a no-op.  
+  Otherwise if the promise is not pending, this performs a no-op.
   **NOTE**: The Contact Picker will still remain open
-  as there is no way in any browser to close this programmatically, 
+  as there is no way in any browser to close this programmatically,
   only the user can dismiss the Contact Picker
   however the promise will be resolved and cleaned up.
 
@@ -168,9 +172,9 @@ const App = () => {
 You import the following types from `import type { Contact, SelectContact, ContactKey, ContactAddress } from 'use-contacts'`
 
 - `SelectContact<T extends ContactKey[] | ContactKey, K extends { multiple?: boolean }>`
-  
-  Can be used to type useState by inferring or specifying the args passed to `select`.  
-  
+
+  Can be used to type useState by inferring or specifying the args passed to `select`.
+
   For instance `SelectContact<'name' | 'tel', { multiple: true }>` maps to `{ name: string[]; tel?: string[] }[]`.
 
 Alternatively you can leverage the full-types as-well:
