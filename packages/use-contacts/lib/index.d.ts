@@ -5,10 +5,11 @@ import type {
   ContactManagerOptions,
   DefinedContactKey,
   SelectContact,
-  ContactAddress
+  ContactAddress,
+  ContactError
 } from './types'
 
-export type { Contact, SelectContact, ContactKey, ContactAddress }
+export type { Contact, SelectContact, ContactKey, ContactAddress, ContactError }
 
 export declare const useContacts: (options?: ContactManagerOptions) => {
   getProperties: () => Promise<ContactKey[]>

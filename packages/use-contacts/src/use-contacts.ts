@@ -6,7 +6,8 @@ import type {
   ContactManagerOptions,
   DefinedContactKey,
   SelectContact,
-  CompleteContact
+  CompleteContact,
+  ContactError
 } from './types'
 
 declare global {
@@ -135,3 +136,8 @@ const ensureArrayDefined = (data: CompleteContact[]) =>
     contacts.push(ensureDefined(next))
     return contacts
   }, [] as CompleteContact[])
+
+
+const isError = <T,>(err: ContactError | T): err is ContactError => !!err && err instanceof Error && !!err.message
+export const isContactError = <T,>(err: ContactError | T): err is ContactError => isError(err) && !err.canceled
+export const hasContacts = <T,>(array: readonly T[]): array is [T, ...T[]] => array.length > 0

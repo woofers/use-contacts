@@ -68,6 +68,11 @@ type GetMultiple<T> = T extends boolean
     : boolean
   : boolean
 
+export type ContactError = {
+  message: string
+  canceled?: boolean
+}
+
 export type SelectContact<
   T extends ContactKey | ContactKey[],
   K extends boolean | ContactOptions

@@ -45,24 +45,28 @@ npm install use-contacts
 
 ```tsx
 import React, { useCallback, useState } from 'react'
-import { useContacts, type SelectContact, type ContactKey } from 'use-contacts'
-
-type ContactError = {
-  message: string
-  canceled?: boolean
-}
-
-const isError = <T,>(err: ContactError | T): err is ContactError => !!err && err instanceof Error && !!err.message
-const isNotCanceled = <T,>(err: ContactError | T): err is ContactError => isError(err) && !err.canceled
-const hasContacts = <T,>(array: readonly T[]): array is [T, ...T[]] => array.length > 0
-
-const properties = ['name', 'email', 'tel', 'icon', 'address'] satisfies ContactKey[]
-const options = { multiple: false } as const
+import { useContacts, hasContacts, isContactError } from 'use-contacts'
 
 const App = () => {
   const { select, getProperties, isSupported, cancel } = useContacts()
-  const [contacts, setContacts] = useState<SelectContact<typeof properties, typeof options>>([])
-  const [error, setError] = useState<ContactError>()
+  const selectAllContactValues = useCallback(() => {
+    return select(['name', 'email', 'tel', 'icon', 'address'], { multiple: false })
+  }, [select])
+  const [contacts, setContacts] = useState<Awaited<ReturnType<typeof selectAllContactValues>>>([])
+  const [error, setError] = useState<{ message: string }>()
+  const selectContact = useCallback(() => {
+    const updateContacts = async () => {
+      try {
+        const data = await selectAllContactValues()
+        if (hasContacts(data)) {
+          setContacts(data)
+        }
+      } catch (e) {
+        if (isContactError(e)) setError(e)
+      }
+    }
+    void updateContacts()
+  }, [selectAllContactValues])
   const showSupportedProperties = useCallback(() => {
     const alertProperties = async () => {
       try {
@@ -76,19 +80,6 @@ const App = () => {
     }
     void alertProperties()
   }, [getProperties])
-  const selectContact = useCallback(() => {
-    const updateContacts = async () => {
-      try {
-        const data = await select(properties, options)
-        if (data.length > 0) {
-          setContacts(data)
-        }
-      } catch (e) {
-        if (isNotCanceled(e)) setError(e)
-      }
-    }
-    void updateContacts()
-  }, [select])
   return (
     <>
       {hasContacts(contacts) && (
