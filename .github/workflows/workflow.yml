@@ -31,7 +31,7 @@ jobs:
       run: bun build-site
     - name: Publish
       if: startsWith(github.ref, 'refs/tags/')
-      run: npm --cwd packages/use-contacts publish --access public
+      run: bun run deploy
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
     - name: Publish Demo
