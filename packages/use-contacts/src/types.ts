@@ -63,10 +63,10 @@ type GetMultiple<T> = T extends boolean
     ? boolean
     : T
   : T extends { multiple: infer X }
-  ? X extends boolean
-    ? X
+    ? X extends boolean
+      ? X
+      : boolean
     : boolean
-  : boolean
 
 export type ContactError = {
   message: string

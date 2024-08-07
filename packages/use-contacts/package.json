@@ -7,18 +7,9 @@
   "sideEffects": false,
   "src": "src/index.tsx",
   "types": "lib/index.d.ts",
-  "files": [
-    "lib",
-    "LICENSE",
-    "package.json",
-    "README.md"
-  ],
+  "files": ["lib", "LICENSE", "package.json", "README.md"],
   "repository": "https://github.com/woofers/use-contacts",
-  "keywords": [
-    "react",
-    "reactjs",
-    "contact"
-  ],
+  "keywords": ["react", "reactjs", "contact"],
   "author": "Jaxson Van Doorn <jaxson.vandoorn@gmail.com>",
   "license": "MIT",
   "bugs": {
@@ -42,7 +33,10 @@
   "peerDependencies": {
     "react": "^0.13.0 || ^0.14.0 || >=15"
   },
-  "dependencies": { "@jest/globals": "^29.7.0", "@testing-library/react": "^14.0.0" },
+  "dependencies": {
+    "@jest/globals": "^29.7.0",
+    "@testing-library/react": "^14.0.0"
+  },
   "devDependencies": {
     "@happy-dom/global-registrator": "^12.0.0",
     "@types/react": "^18.2.21",
@@ -63,8 +57,5 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.2.2"
   },
-  "browserslist": [
-    "defaults",
-    "not IE 11"
-  ]
+  "browserslist": ["defaults", "not IE 11"]
 }

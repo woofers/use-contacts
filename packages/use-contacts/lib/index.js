@@ -1,6 +1,5 @@
 if (process.env.NODE_ENV !== 'production') {
   module.exports = require('./use-contacts.dev.js')
-}
-else {
+} else {
   module.exports = require('./use-contacts.js')
 }

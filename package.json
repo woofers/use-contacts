@@ -2,11 +2,7 @@
   "name": "use-contacts",
   "version": "1.1.0",
   "description": "Typesafe Contact Picker API wrapper for React",
-  "files": [
-    "index.js",
-    "package.json",
-    "README.md"
-  ],
+  "files": ["index.js", "package.json", "README.md"],
   "scripts": {
     "deploy": "bun run --cwd=packages/use-contacts deploy",
     "build-site": "turbo run build-site",
@@ -14,13 +10,14 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "format": "prettier --write \"packages/**/{src,tests}/**/*.{jsx,js,tsx,ts}\""
+    "format": "biome format --write"
   },
   "keywords": [],
   "author": "",
   "license": "MIT",
   "workspaces": ["packages/*"],
   "devDependencies": {
+    "@biomejs/biome": "^1.8.3",
     "prettier": "^3.0.3",
     "turbo": "^1.10.15"
   }

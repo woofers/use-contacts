@@ -18,20 +18,20 @@ module.exports = {
   root: true,
   rules: {
     'no-var': 0,
-    '@typescript-eslint/no-unused-vars': ['error', { 'argsIgnorePattern': '^_' }],
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
     '@typescript-eslint/ban-types': [
       'error',
       {
-        'types': {
+        types: {
           '{}': false
         },
-        'extendDefaults': true
+        extendDefaults: true
       }
     ]
   },
-  'settings': {
-    'react': {
-      'version': 'detect'
+  settings: {
+    react: {
+      version: 'detect'
     }
   }
 }
