@@ -20,7 +20,7 @@
     "test": "bun typecheck && bun test",
     "lint": "biome lint --error-on-warnings ./src",
     "typecheck": "tsc --p .",
-    "deploy": "npm --access public",
+    "deploy": "npm publish --access public",
     "types": "cp ./src/types.ts lib/types.d.ts",
     "build": "bun lint && bun build:nolint",
     "build:nolint": "bun typecheck && bun clean && bun types && bun build:module && bun build:dev:module && bun run build:legacy && bun build:dev:legacy",
