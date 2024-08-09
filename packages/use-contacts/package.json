@@ -17,7 +17,7 @@
   },
   "homepage": "https://jaxs.onl/use-contacts/",
   "scripts": {
-    "test": "bun typecheck && bun test --slient false",
+    "test": "bun typecheck && bun test",
     "lint": "eslint \"src/**/*.{jsx,js,tsx,ts}\"",
     "typecheck": "tsc --p .",
     "deploy": "npm --access public",
