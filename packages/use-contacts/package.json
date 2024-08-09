@@ -18,7 +18,7 @@
   "homepage": "https://jaxs.onl/use-contacts/",
   "scripts": {
     "test": "bun typecheck && bun test",
-    "lint": "eslint \"src/**/*.{jsx,js,tsx,ts}\"",
+    "lint": "biome lint --error-on-warnings ./src",
     "typecheck": "tsc --p .",
     "deploy": "npm --access public",
     "types": "cp ./src/types.ts lib/types.d.ts",

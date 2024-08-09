@@ -51,7 +51,7 @@ type IsAny<T> = unknown extends T
   : false
 
 export type DefinedContactKey<T extends ContactKey | ContactKey[]> =
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // biome-ignore lint: Any is valid on the type level
   IsAny<T> extends true ? ContactKey : T extends any[] ? T[number] : T
 
 type ContactWithFields<T extends ContactKey> = Contact<T> extends infer X

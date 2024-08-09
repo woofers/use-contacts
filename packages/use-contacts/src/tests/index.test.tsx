@@ -79,7 +79,7 @@ const getArray = <T, K extends boolean = false>(
   return arr as K extends false ? [T] : T[]
 }
 
-const Properties: React.FC<{}> = () => {
+const Properties: React.FC<never> = () => {
   const { getProperties } = useContacts()
   const [properties, setProperties] = useState([] as string[])
   const [error, setError] = useState<ContactError | undefined>()
@@ -244,7 +244,7 @@ describe('useContacts', () => {
       const contacts = globalThis.navigator.contacts
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint: Fix invalid type
       container.innerHTML = renderToString((<Button />) as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
@@ -255,7 +255,7 @@ describe('useContacts', () => {
     it('isSupported() is handled on SSR when unsupported', async () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      // biome-ignore lint: Fix invalid type
       container.innerHTML = renderToString((<Button />) as any)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
