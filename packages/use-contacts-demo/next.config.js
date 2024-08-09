@@ -6,4 +6,4 @@ const nextConfig = {
     assetPrefix: '/use-contacts/'
 }
 
-export default nextConfig
+module.exports = nextConfig
