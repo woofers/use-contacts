@@ -79,7 +79,7 @@ const getArray = <T, K extends boolean = false>(
   return arr as K extends false ? [T] : T[]
 }
 
-const Properties: React.FC<never> = () => {
+const Properties: React.FC<Record<string, never>> = () => {
   const { getProperties } = useContacts()
   const [properties, setProperties] = useState([] as string[])
   const [error, setError] = useState<ContactError | undefined>()
@@ -244,8 +244,7 @@ describe('useContacts', () => {
       const contacts = globalThis.navigator.contacts
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      // biome-ignore lint: Fix invalid type
-      container.innerHTML = renderToString((<Button />) as any)
+      container.innerHTML = renderToString(<Button />)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       globalThis.navigator.contacts = contacts
@@ -255,8 +254,7 @@ describe('useContacts', () => {
     it('isSupported() is handled on SSR when unsupported', async () => {
       delete globalThis.navigator.contacts
       const container = document.createElement('div')
-      // biome-ignore lint: Fix invalid type
-      container.innerHTML = renderToString((<Button />) as any)
+      container.innerHTML = renderToString(<Button />)
       document.body.appendChild(container)
       expect(screen.getByText('Unsupported'))
       render(<Button />, { container, hydrate: true })
